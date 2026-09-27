@@ -1,0 +1,9 @@
+{
+  "name": "the-spare-room",
+  "version": "1.0.0",
+  "description": "A little extra space for your brain",
+  "private": true,
+  "scripts": {
+    "dev": "node dev-server.js"
+  }
+}
