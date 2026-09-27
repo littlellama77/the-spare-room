@@ -1457,20 +1457,23 @@ function setupGlobalInteractions() {
 // ============================================================================
 // 14. INITIALIZATION
 // ============================================================================
-document.addEventListener('DOMContentLoaded', () => {
-  renderHomeScreen();
-  renderCalendar();
-  renderThings();
-  renderJournal();
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', () => {
+    renderHomeScreen();
+    renderCalendar();
+    renderThings();
+    renderJournal();
 
-  setupMoodCheckin();
-  setupUnstuckEvents();
-  setupBrainDump();
-  setupJournal();
-  setupAddModal();
-  setupScheduleModal();
-  setupGlobalInteractions();
+    setupMoodCheckin();
+    setupUnstuckEvents();
+    setupBrainDump();
+    setupJournal();
+    setupAddModal();
+    setupScheduleModal();
+    setupGlobalInteractions();
 
-  // Allow clicking anywhere once to initialize audio context smoothly
-  document.body.addEventListener('click', () => audio.init(), { once: true });
-});
+    // Allow clicking anywhere once to initialize audio context smoothly
+    document.body.addEventListener('click', () => audio.init(), { once: true });
+  });
+}
+

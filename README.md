@@ -84,7 +84,7 @@ This prototype requires zero dependencies and runs in any modern browser.
 
 2. **Serve with Node.js**:
    ```bash
-   node dev-server.js
+   node server.js
    ```
 
 3. Open **[http://localhost:3000](http://localhost:3000)** in your browser.
