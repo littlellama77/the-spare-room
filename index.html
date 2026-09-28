@@ -3,796 +3,508 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>The Spare Room — A little extra space for your brain</title>
-  <meta name="description" content="A gentle external space for your brain. You don't have to hold everything in your head. Designed for mental clutter, working memory, and executive dysfunction.">
+  <title>The Spare Room — Just this for now</title>
+  <meta name="description" content="A calm, playful workspace that makes work feel smaller, lets you physically scratch tasks off with your own hand, and turns progress into a growing world.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛋️</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🌱</text></svg>">
 </head>
-<body>
-  <!-- Ambient background glow elements -->
-  <div class="ambient-glow glow-top" aria-hidden="true"></div>
-  <div class="ambient-glow glow-bottom" aria-hidden="true"></div>
+<body class="view-home">
 
-  <div class="app-layout">
-    <!-- Top Header -->
-    <header class="main-header">
-      <div class="brand-group">
-        <a href="#home" class="brand-link" id="brand-home-link" aria-label="The Spare Room Home">
-          <span class="brand-icon">🛋️</span>
-          <div class="brand-text">
-            <span class="brand-title">The Spare Room</span>
-            <span class="brand-tagline">A little extra space for your brain</span>
-          </div>
-        </a>
+  <!-- Gentle ambient background light -->
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- Workspace Shell -->
+  <div class="workspace-shell" id="workspace-shell">
+
+    <!-- 1. QUIET TOP HEADER -->
+    <header class="calm-topbar">
+      <div class="topbar-left">
+        <button class="brand-crumb-btn" id="btn-brand-home" title="The Spare Room">
+          <span class="crumb-leaf">🌱</span>
+          <span class="crumb-brand">The Spare Room</span>
+          <span class="crumb-divider">·</span>
+          <span class="crumb-month">September 2026</span>
+        </button>
       </div>
 
-      <!-- Desktop Navigation -->
-      <nav class="desktop-nav" aria-label="Primary Navigation">
-        <button class="nav-tab active" data-target="screen-home" id="tab-home">
-          <span class="tab-icon">🏠</span>
-          <span class="tab-label">Home</span>
-        </button>
-        <button class="nav-tab" data-target="screen-calendar" id="tab-calendar">
-          <span class="tab-icon">📅</span>
-          <span class="tab-label">Calendar</span>
-        </button>
-        <button class="nav-tab" data-target="screen-things" id="tab-things">
-          <span class="tab-icon">📝</span>
-          <span class="tab-label">Things</span>
-        </button>
-        <button class="nav-tab" data-target="screen-journal" id="tab-journal">
-          <span class="tab-icon">💭</span>
-          <span class="tab-label">Journal</span>
-        </button>
-        <button class="nav-tab" data-target="screen-braindump" id="tab-braindump">
-          <span class="tab-icon">🧠</span>
-          <span class="tab-label">Brain Dump</span>
-        </button>
-      </nav>
-
-      <!-- Utility Header Actions -->
-      <div class="header-utilities">
-        <!-- Ambient Sound Generator Toggle -->
-        <button id="ambient-sound-toggle" class="header-util-btn" title="Toggle gentle room ambience" aria-label="Toggle gentle room ambience">
-          <span class="util-icon" id="ambient-icon">🌧️</span>
-          <span class="util-text">Rain</span>
+      <div class="topbar-right">
+        <!-- Quiet Action: + Add task -->
+        <button class="btn-quiet-add" id="btn-open-add-modal" aria-label="Add task with AI estimation">
+          <span class="add-symbol">+</span>
+          <span class="add-text">Add task</span>
         </button>
 
-        <!-- Sound Chime Toggle -->
-        <button id="sound-effects-toggle" class="header-util-btn" title="Toggle gentle interaction sounds" aria-label="Toggle chime sounds">
-          <span class="util-icon" id="sound-icon">🔔</span>
+        <!-- Rain ambience toggle -->
+        <button class="btn-quiet-sound" id="btn-sound-toggle" title="Toggle gentle room rain" aria-label="Toggle ambient rain">
+          <span class="sound-icon" id="sound-icon">🌧️</span>
         </button>
 
-        <!-- Prominent 'I'm stuck' pill in header -->
-        <button id="header-unstuck-btn" class="header-unstuck-pill" title="Need help getting started? Launch Unstuck mode">
-          <span class="unstuck-pill-icon">🛟</span>
-          <span class="unstuck-pill-label">I'm stuck</span>
+        <!-- World Emotional Anchor Widget with Living Mini-Diorama -->
+        <button class="world-anchor-widget" id="btn-open-world" title="Visit your growing September World" aria-label="Open September World">
+          <div class="mini-diorama" aria-hidden="true">
+            <div class="diorama-sky">
+              <span class="diorama-cloud">☁️</span>
+              <span class="diorama-butterfly">🦋</span>
+            </div>
+            <div class="diorama-ground">
+              <span class="diorama-cabin">🏡</span>
+              <span class="diorama-flora">🌱</span>
+            </div>
+          </div>
+          <div class="diorama-text">
+            <span class="diorama-title">September World</span>
+            <span class="diorama-count" id="diorama-piece-count">12 pieces grown →</span>
+          </div>
         </button>
       </div>
     </header>
 
-    <!-- Main Screens Container -->
-    <main class="content-container" id="app-main">
+    <!-- ====================================================================
+         MAIN VIEW: CALM PROGRESSIVE WORKSPACE (SEE)
+         ==================================================================== -->
+    <main class="main-content-flow" id="main-content-flow">
 
-      <!-- ============================================================
-           SCREEN 1: HOME
-           "What needs your attention right now?"
-           ============================================================ -->
-      <section id="screen-home" class="screen-view active">
-        <!-- Hero Greeting Banner -->
-        <div class="home-greeting-banner">
-          <div class="greeting-content">
-            <span class="greeting-badge">Today in your spare room</span>
-            <h1 class="greeting-title" id="home-greeting-heading">Good morning 🌱</h1>
-            <p class="greeting-philosophy">You don't have to hold everything in your head.</p>
-          </div>
-          <div class="greeting-quote-pill">
-            <span class="quote-sparkle">✨</span>
-            <span>Starting is enough. Not today is not failure.</span>
-          </div>
+      <!-- 2. MAIN HERO: "Just this." (The single emotional focus) -->
+      <section class="hero-focus-section" aria-label="Today's single action">
+        <div class="hero-header-block">
+          <h1 class="hero-title">Just this.</h1>
+          <p class="hero-subtitle">One little thing for today.</p>
         </div>
 
-        <!-- Mood Check-in Card -->
-        <div class="card mood-checkin-card">
-          <div class="card-header-subtle">
-            <span class="subtle-prompt">Check in with yourself</span>
-            <h2 class="section-title">How are you feeling right now?</h2>
-          </div>
-          <div class="mood-selector" role="radiogroup" aria-label="Current feeling">
-            <button class="mood-pill" data-mood="overwhelmed" aria-label="Overwhelmed">
-              <span class="mood-emoji">😵💫</span>
-              <span class="mood-name">Overwhelmed</span>
-            </button>
-            <button class="mood-pill" data-mood="stuck" aria-label="Stuck">
-              <span class="mood-emoji">🫠</span>
-              <span class="mood-name">Stuck</span>
-            </button>
-            <button class="mood-pill" data-mood="low-energy" aria-label="Low energy">
-              <span class="mood-emoji">😴</span>
-              <span class="mood-name">Low energy</span>
-            </button>
-            <button class="mood-pill" data-mood="okay" aria-label="Okay">
-              <span class="mood-emoji">😐</span>
-              <span class="mood-name">Okay</span>
-            </button>
-            <button class="mood-pill" data-mood="good" aria-label="Good">
-              <span class="mood-emoji">✨</span>
-              <span class="mood-name">Good</span>
-            </button>
-          </div>
-          <!-- Reassuring Dynamic Response Message -->
-          <div id="mood-response-box" class="mood-response-box" style="display: none;" aria-live="polite">
-            <p id="mood-response-text" class="mood-response-text"></p>
-            <button id="mood-response-action" class="btn-text-action"></button>
-          </div>
-        </div>
-
-        <!-- 3 Large Quick Actions -->
-        <div class="home-quick-actions">
-          <button class="quick-action-card action-add" id="home-btn-add">
-            <div class="action-icon-circle">+</div>
-            <div class="action-info">
-              <span class="action-title">Add something</span>
-              <span class="action-desc">Put down a task, reminder, or note</span>
-            </div>
-          </button>
-
-          <button class="quick-action-card action-braindump" id="home-btn-braindump">
-            <div class="action-icon-circle">🧠</div>
-            <div class="action-info">
-              <span class="action-title">Brain dump</span>
-              <span class="action-desc">Unload tangled thoughts without organizing</span>
-            </div>
-          </button>
-
-          <button class="quick-action-card action-unstuck" id="home-btn-unstuck">
-            <div class="action-icon-circle">🛟</div>
-            <div class="action-info">
-              <span class="action-title">I'm stuck</span>
-              <span class="action-desc">Break any hard task into one tiny action</span>
-            </div>
-          </button>
-        </div>
-
-        <!-- Main Home Grid: TODAY & STILL ON MY MIND -->
-        <div class="home-dashboard-grid">
-          <!-- Column 1: TODAY -->
-          <div class="dashboard-col">
-            <div class="col-header">
-              <div class="col-title-group">
-                <span class="col-tag tag-today">TODAY</span>
-                <h2 class="col-title">What's happening today</h2>
-              </div>
-              <span class="col-caption">A few things, not everything.</span>
-            </div>
-
-            <!-- Focus Task Card (Finish presentation) -->
-            <div class="card focus-task-card" id="home-focus-card">
-              <div class="task-card-top">
-                <div class="task-badge-row">
-                  <span class="energy-badge energy-high">🔥 High energy</span>
-                  <span class="task-type-badge">Focus item</span>
-                </div>
-                <button class="card-kebab-btn" title="Task options" aria-label="Task options">•••</button>
-              </div>
-
-              <h3 class="focus-task-title" id="home-focus-title">Finish presentation</h3>
-              
-              <!-- Next Tiny Step Callout -->
-              <div class="tiny-step-container">
-                <div class="tiny-step-header">
-                  <span class="tiny-step-leaf">🌱</span>
-                  <span class="tiny-step-label">Next tiny step</span>
-                </div>
-                <p class="tiny-step-text" id="home-focus-step">Open the presentation.</p>
-              </div>
-
-              <!-- Action Bar -->
-              <div class="task-action-bar">
-                <button class="btn btn-primary btn-sm" id="btn-focus-start">
-                  <span>Open tiny step</span>
-                </button>
-                <button class="btn btn-ghost btn-sm" id="btn-focus-unstuck">
-                  <span>🛟 Make smaller</span>
-                </button>
-                <button class="btn btn-ghost btn-sm" id="btn-focus-done">
-                  <span>✓ Done</span>
-                </button>
-                <button class="btn btn-ghost btn-sm btn-subtle" id="btn-focus-nottoday" title="Quietly move to Later with zero guilt">
-                  <span>Not today</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Reminder Card -->
-            <div class="card reminder-card" id="home-reminder-card">
-              <div class="reminder-icon-box">⏰</div>
-              <div class="reminder-content">
-                <span class="item-micro-label">Reminder</span>
-                <h4 class="reminder-title" id="home-reminder-title">Swimming · 6:00 PM</h4>
-                <p class="reminder-sub">Pack your goggles and towel beforehand</p>
-              </div>
-              <button class="btn-check-circle" id="btn-reminder-done" title="Mark done" aria-label="Mark reminder done">✓</button>
-            </div>
-
-            <!-- Something to Remember (Sticky note aesthetic) -->
-            <div class="card sticky-remember-card" id="home-remember-card">
-              <div class="sticky-pin">📌</div>
-              <div class="sticky-content">
-                <span class="item-micro-label">Something to remember</span>
-                <p class="sticky-text" id="home-remember-text">Buy paint on the way home.</p>
-              </div>
-              <button class="btn-check-circle" id="btn-remember-done" title="Clear note" aria-label="Clear remember note">✓</button>
-            </div>
-          </div>
-
-          <!-- Column 2: STILL ON MY MIND -->
-          <div class="dashboard-col">
-            <div class="col-header">
-              <div class="col-title-group">
-                <span class="col-tag tag-mind">BACKGROUND</span>
-                <h2 class="col-title">Still on my mind</h2>
-              </div>
-              <span class="col-caption">Things lingering. Put them down where they belong.</span>
-            </div>
-
-            <div class="card mind-list-card">
-              <ul class="mind-list" id="home-mind-list">
-                <!-- Injected via JavaScript -->
-              </ul>
-
-              <div class="mind-card-footer">
-                <button class="btn-inline-add" id="btn-mind-add">+ Add something lingering</button>
-              </div>
-            </div>
-
-            <!-- Gentle Reassurance Quote Card -->
-            <div class="calm-philosophy-card">
-              <span class="quote-leaf">🌿</span>
-              <p class="calm-quote">"Your brain is for having ideas, not holding them. Putting things in The Spare Room frees up working memory so you can actually breathe."</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================
-           SCREEN 2: CALENDAR
-           "When does everything belong?"
-           Spacious physical planner translated into a digital space.
-           ============================================================ -->
-      <section id="screen-calendar" class="screen-view">
-        <div class="screen-header">
-          <div class="screen-header-text">
-            <span class="section-kicker">When does everything belong?</span>
-            <h1 class="page-title">Calendar & Physical Planner</h1>
-            <p class="page-desc">Not a tiny grid of numbers. An actual spacious planner desk where every day has room to breathe.</p>
-          </div>
-
-          <!-- Calendar Controls -->
-          <div class="calendar-controls">
-            <div class="cal-nav-buttons">
-              <button class="btn-icon-soft" id="cal-prev" title="Previous period" aria-label="Previous period">‹</button>
-              <span class="cal-period-label" id="cal-current-label">September / October 2026</span>
-              <button class="btn-icon-soft" id="cal-next" title="Next period" aria-label="Next period">›</button>
-            </div>
-            <div class="view-switch-pills">
-              <button class="switch-pill active" id="btn-view-planner">Spacious Planner</button>
-              <button class="switch-pill" id="btn-view-month">Month Grid</button>
-            </div>
-            <button class="btn btn-secondary btn-sm" id="cal-btn-add">+ Add to date</button>
-          </div>
-        </div>
-
-        <!-- Calendar Planner Board (Spacious multi-day columns with room for events, tasks, reminders, notes) -->
-        <div class="planner-desk-wrapper" id="planner-desk-container">
-          <div class="planner-days-grid" id="planner-days-grid">
-            <!-- Rendered by JS: Mon 28, Tue 29, Wed 30, Thu 1, Fri 2, Sat 3, Sun 4 -->
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================
-           SCREEN 3: THINGS
-           "What do I need to remember?"
-           TODAY, SOON, LATER with "Not today" support & energy filters.
-           ============================================================ -->
-      <section id="screen-things" class="screen-view">
-        <div class="screen-header">
-          <div class="screen-header-text">
-            <span class="section-kicker">What do I need to remember?</span>
-            <h1 class="page-title">Things</h1>
-            <p class="page-desc">Everything you don't want your brain to forget, organized by when it actually matters.</p>
-          </div>
-
-          <!-- Energy Filter Bar -->
-          <div class="things-filter-bar">
-            <span class="filter-label">Filter by energy:</span>
-            <div class="filter-pills" role="radiogroup" aria-label="Filter tasks by energy level">
-              <button class="filter-pill active" data-energy="all">All items</button>
-              <button class="filter-pill" data-energy="low">🌱 Low energy</button>
-              <button class="filter-pill" data-energy="medium">🌿 Medium energy</button>
-              <button class="filter-pill" data-energy="high">🔥 High energy</button>
-            </div>
-            <button class="btn btn-primary btn-sm" id="btn-things-add-modal">+ Add thing</button>
-          </div>
-        </div>
-
-        <!-- Philosophy Banner for Not Today -->
-        <div class="philosophy-toast-banner">
-          <span class="toast-icon">🌱</span>
-          <p class="toast-quote"><strong>"Not today doesn't mean never."</strong> Postponing is not a failure. When something is too much, quietly send it to Later with zero guilt.</p>
-        </div>
-
-        <!-- 3 Columns: TODAY, SOON, LATER -->
-        <div class="things-board-grid">
-          <!-- Column 1: TODAY -->
-          <div class="things-column col-today">
-            <div class="column-header">
-              <div class="column-badge-group">
-                <span class="col-pill col-pill-today">TODAY</span>
-                <span class="col-count" id="count-today">0</span>
-              </div>
-              <h2 class="column-title">Things that matter today</h2>
-              <p class="column-hint">Keep this small and gentle.</p>
-            </div>
-
-            <div class="column-cards-list" id="list-things-today">
-              <!-- Populated by JS -->
-            </div>
-
-            <button class="btn-column-add" data-category="today">+ Add to Today</button>
-          </div>
-
-          <!-- Column 2: SOON -->
-          <div class="things-column col-soon">
-            <div class="column-header">
-              <div class="column-badge-group">
-                <span class="col-pill col-pill-soon">SOON</span>
-                <span class="col-count" id="count-soon">0</span>
-              </div>
-              <h2 class="column-title">Things for sometime soon</h2>
-              <p class="column-hint">On the horizon, but not for right this second.</p>
-            </div>
-
-            <div class="column-cards-list" id="list-things-soon">
-              <!-- Populated by JS -->
-            </div>
-
-            <button class="btn-column-add" data-category="soon">+ Add to Soon</button>
-          </div>
-
-          <!-- Column 3: LATER -->
-          <div class="things-column col-later">
-            <div class="column-header">
-              <div class="column-badge-group">
-                <span class="col-pill col-pill-later">LATER</span>
-                <span class="col-count" id="count-later">0</span>
-              </div>
-              <h2 class="column-title">Things that can wait</h2>
-              <p class="column-hint">Safely parked. No deadlines, no pressure.</p>
-            </div>
-
-            <div class="column-cards-list" id="list-things-later">
-              <!-- Populated by JS -->
-            </div>
-
-            <button class="btn-column-add" data-category="later">+ Add to Later</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================
-           SCREEN 4: BRAIN DUMP
-           "Get it out of your head."
-           Simulated parser extracting keepable items with category pills.
-           ============================================================ -->
-      <section id="screen-braindump" class="screen-view">
-        <div class="screen-header text-center">
-          <span class="section-kicker">Free-form unloading</span>
-          <h1 class="page-title">Get it out of your head.</h1>
-          <p class="page-desc max-width-text">You don't have to organize it yet. Just put it here. Let your thoughts spill onto the page without worrying about grammar or structure.</p>
-        </div>
-
-        <div class="card braindump-card">
-          <div class="braindump-top">
-            <label for="braindump-input" class="braindump-label">What's swirling around up there?</label>
-            <button class="btn-sample-dump" id="btn-load-sample-dump" title="Load an example thought dump">
-              <span>Try example thoughts ✨</span>
+        <!-- The Physical Paper Task Slip with Interactive Freehand Scratch -->
+        <div class="paper-task-slip" id="hero-task-slip">
+          <!-- Tier 1: Quiet Project Context Pill -->
+          <div class="slip-top-meta">
+            <button class="project-tag-pill" id="btn-reveal-project" title="Click to see project timeline and details">
+              <span class="tag-dot"></span>
+              <span class="tag-title" id="hero-project-label">MARKETING PRESENTATION</span>
+              <span class="tag-info-cue">timeline &amp; details ▾</span>
             </button>
           </div>
 
-          <div class="braindump-textarea-wrap">
-            <textarea id="braindump-input" rows="5" placeholder="I need to finish my assignment and buy shampoo and call the dentist and I forgot to pay the bill and also I need to figure out what I'm doing this weekend..."></textarea>
-          </div>
+          <!-- Tier 2: Primary Core Action Row (Checkbox, Title + Scratch, START CTA) -->
+          <div class="slip-core-row">
+            <button class="slip-box-indicator" id="hero-slip-box" aria-label="Task status: not completed">
+              <span class="box-icon" id="hero-scratch-box">□</span>
+            </button>
 
-          <div class="braindump-actions">
-            <span class="braindump-note">We'll help separate tasks from noise gently.</span>
-            <div class="btn-group-right">
-              <button class="btn btn-ghost btn-sm" id="btn-clear-dump">Clear</button>
-              <button class="btn btn-primary" id="btn-submit-dump">
-                <span>Put it down</span>
+            <div class="task-title-scratch-container" id="hero-scratch-zone">
+              <h2 class="hero-task-title" id="hero-task-title">Write the introduction</h2>
+              <!-- Interactive Freehand Scratch Canvas (User draws with finger / mouse) -->
+              <canvas class="freehand-scratch-canvas" id="hero-freehand-canvas"></canvas>
+              <span class="scratch-prompt-cue" id="hero-scratch-cue">drag across to cross off ✏️</span>
+            </div>
+
+            <!-- Start Mode Trigger -->
+            <div class="slip-action-right">
+              <button class="btn-start-hero" id="btn-start-hero" aria-label="Start today's session in focus mode">
+                <span>START</span>
+                <span class="cta-arrow">→</span>
               </button>
             </div>
           </div>
+
+          <!-- Tier 3: Calm Specs & Reassurance -->
+          <div class="hero-specs-row">
+            <span class="hero-time-badge">
+              <span class="time-circle">○</span>
+              <span id="hero-duration-label">30 minutes</span>
+            </span>
+            <span class="specs-bullet">·</span>
+            <span class="hero-reassurance">You don't need to finish the whole project today.</span>
+          </div>
         </div>
 
-        <!-- Simulated Extraction Results Container -->
-        <div class="braindump-results-wrap" id="braindump-results-area" style="display: none;">
-          <!-- Thinking animation -->
-          <div class="parsing-state" id="dump-parsing-state">
-            <div class="gentle-spinner">🌱</div>
-            <p class="parsing-text">Unpacking your thoughts... sorting what's worth keeping</p>
-          </div>
-
-          <!-- Extracted Items Box -->
-          <div class="card extracted-card" id="dump-extracted-card" style="display: none;">
-            <div class="extracted-header">
-              <span class="extracted-badge">Found items</span>
-              <h3 class="extracted-title">I found a few things worth keeping:</h3>
-              <p class="extracted-sub">Pick where each belongs in The Spare Room, then save them all at once.</p>
-            </div>
-
-            <div class="extracted-items-list" id="extracted-items-container">
-              <!-- Injected by JS -->
-            </div>
-
-            <div class="extracted-footer">
-              <span class="extracted-status" id="extracted-status-msg">All items have a suggested home.</span>
-              <button class="btn btn-primary btn-large" id="btn-save-extracted-items">
-                <span>Save to The Spare Room 🌱</span>
-              </button>
-            </div>
+        <!-- Completed Today Paper Shelf (Completed tasks rest here physically) -->
+        <div class="completed-today-tray" id="completed-today-tray" style="display: none;">
+          <span class="tray-label">Completed today:</span>
+          <div class="scratched-slips-rack" id="scratched-slips-rack">
+            <!-- Settled slips appear here with their human scratch line -->
           </div>
         </div>
       </section>
 
-      <!-- ============================================================
-           SCREEN 5: JOURNAL
-           "What's happening inside my head?"
-           A place to put things that aren't tasks.
-           ============================================================ -->
-      <section id="screen-journal" class="screen-view">
-        <div class="screen-header">
-          <div class="screen-header-text">
-            <span class="section-kicker">What's happening inside my head?</span>
-            <h1 class="page-title">Journal</h1>
-            <p class="page-desc">A place to put the things that aren't tasks. You don't have to make sense here.</p>
+      <!-- 3. PROGRESSIVE DISCLOSURE: PROJECT DETAILS DRAWER (Hidden until asked) -->
+      <section class="project-drawer" id="project-drawer" style="display: none;" aria-label="Project details and timeline">
+        <div class="drawer-header">
+          <div class="drawer-project-meta">
+            <span class="drawer-badge">PROJECT BREAKDOWN</span>
+            <h3 class="drawer-project-name" id="drawer-project-title">MARKETING PRESENTATION</h3>
+            <span class="drawer-subtext" id="drawer-project-meta-text">Estimated: 3 × 30 min · Due Friday</span>
           </div>
+          <button class="btn-close-drawer" id="btn-close-drawer" aria-label="Close project details">✕</button>
         </div>
 
-        <!-- Journal Composer Card -->
-        <div class="card journal-composer-card">
-          <div class="journal-prompt-row">
-            <span class="journal-prompt-label">Current mood / atmosphere:</span>
-            <div class="journal-mood-picker" role="radiogroup" aria-label="Journal entry mood">
-              <button class="j-mood-btn" data-mood="😵💫" title="Overwhelmed">😵💫</button>
-              <button class="j-mood-btn selected" data-mood="🫠" title="Stuck">🫠</button>
-              <button class="j-mood-btn" data-mood="😴" title="Low energy">😴</button>
-              <button class="j-mood-btn" data-mood="😐" title="Okay">😐</button>
-              <button class="j-mood-btn" data-mood="✨" title="Good">✨</button>
-            </div>
+        <!-- The Clean Minimalist Timeline Track -->
+        <div class="drawer-timeline-row">
+          <span class="timeline-edge-label">TODAY</span>
+          <div class="drawer-track-bar" id="drawer-track-bar">
+            <!-- Dynamic track: ● ━━━ ● ━━━ ● ━━━ ◆ -->
           </div>
-
-          <div class="journal-textarea-container">
-            <textarea id="journal-textarea" rows="4" placeholder="What's on your mind? No grammar, no structure, no judgment..."></textarea>
-          </div>
-
-          <div class="journal-submit-bar">
-            <span class="notebook-hint">📖 This stays in your private room.</span>
-            <button class="btn btn-primary" id="btn-save-journal">
-              <span>Save entry</span>
-            </button>
-          </div>
+          <span class="timeline-edge-label" id="drawer-deadline-label">FRIDAY</span>
         </div>
 
-        <!-- Previous Journal Entries List -->
-        <div class="journal-entries-section">
-          <div class="entries-section-header">
-            <h2 class="entries-heading">Previous notes to yourself</h2>
-            <span class="entries-caption">Things put down and safely held.</span>
-          </div>
-
-          <div class="journal-entries-list" id="journal-entries-container">
-            <!-- Dynamic entries injected by JS -->
-          </div>
+        <div class="drawer-stats-row">
+          <span class="drawer-stat" id="drawer-remaining-sessions">3 sessions left</span>
+          <span class="drawer-dot">·</span>
+          <span class="drawer-stat" id="drawer-days-left">4 days remaining</span>
+          <span class="drawer-dot">·</span>
+          <span class="drawer-tip">Tap any piece to jump straight into it</span>
         </div>
       </section>
+
+      <!-- 4. THE CALENDAR: PHYSICAL WALL DESK WITH ACCUMULATED SCRATCHES -->
+      <section class="week-calendar-section" aria-label="Your week schedule">
+        <div class="week-section-header">
+          <div>
+            <h3 class="week-title">Your week</h3>
+            <p class="week-desc">See what's ahead. <span class="subtle-tip">Drag a session if your plans change.</span></p>
+          </div>
+
+          <!-- Project filter pills -->
+          <div class="quiet-project-filter" id="quiet-project-filter">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- The 7-Day Desk Board -->
+        <div class="calendar-wall-desk" id="calendar-wall-desk">
+          <!-- 7 Days: MON 28, TUE 29, WED 30, THU 1, FRI 2 (◆ Due), SAT 3, SUN 4 -->
+        </div>
+      </section>
+
     </main>
 
-    <!-- ============================================================
-         UNSTUCK MODE OVERLAY
-         "Okay. Let's forget everything else for a minute. 🌱"
-         ============================================================ -->
-    <div id="unstuck-modal-overlay" class="unstuck-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="unstuck-header-title">
-      <div class="unstuck-modal-container">
-        <!-- Close / Back button -->
-        <button id="btn-close-unstuck" class="unstuck-close-btn" aria-label="Close Unstuck mode">✕</button>
+    <!-- ====================================================================
+         STATE: CALM START & FOCUS TIMER (Full Focus Mode)
+         ==================================================================== -->
+    <div class="focus-timer-screen" id="focus-timer-screen" style="display: none;" aria-label="Distraction-free focus timer">
+      <div class="focus-container">
+        <button class="btn-exit-focus" id="btn-exit-focus" title="Back to my day" aria-label="Exit focus mode">✕</button>
 
-        <!-- Unstuck Phase 1: Obstacle Identification -->
-        <div id="unstuck-view-phase1" class="unstuck-view-phase active">
-          <div class="unstuck-hero-text">
-            <span class="unstuck-calm-badge">Breathe out 🌱</span>
-            <h2 class="unstuck-title" id="unstuck-header-title">Okay. Let's forget everything else for a minute.</h2>
-            <p class="unstuck-sub">What are you trying to do?</p>
+        <!-- Focus Timer View -->
+        <div class="focus-clock-view" id="focus-clock-view">
+          <span class="focus-task-name-badge" id="focus-clock-task-name">Write the introduction</span>
+
+          <!-- Giant Serene Clock -->
+          <div class="focus-clock-number" id="focus-clock-number">30:00</div>
+
+          <!-- Thin Calm Progress Line -->
+          <div class="focus-progress-rail">
+            <div class="focus-progress-fill" id="focus-progress-fill" style="width: 0%;"></div>
           </div>
 
-          <!-- Current Task Focus Box (Editable) -->
-          <div class="unstuck-focus-task-card">
-            <span class="focus-label">TASK IN FRONT OF YOU</span>
-            <div class="focus-input-row">
-              <input type="text" id="unstuck-task-name-input" value="Finish my presentation" aria-label="Task name">
-            </div>
-          </div>
-
-          <!-- "What's making it hard?" Options Grid -->
-          <div class="unstuck-obstacles-section">
-            <h3 class="obstacle-heading">What's making it hard?</h3>
-            <div class="obstacle-options-grid">
-              <button class="obstacle-btn" data-obstacle="overwhelming">
-                <span class="obs-icon">😵</span>
-                <div class="obs-text">
-                  <span class="obs-title">Too overwhelming</span>
-                  <span class="obs-desc">Too much to sort through at once</span>
-                </div>
-              </button>
-
-              <button class="obstacle-btn" data-obstacle="dont-know-start">
-                <span class="obs-icon">🫠</span>
-                <div class="obs-text">
-                  <span class="obs-title">I don't know where to start</span>
-                  <span class="obs-desc">Everything feels equally blurry</span>
-                </div>
-              </button>
-
-              <button class="obstacle-btn" data-obstacle="no-energy">
-                <span class="obs-icon">😴</span>
-                <div class="obs-text">
-                  <span class="obs-title">I have no energy</span>
-                  <span class="obs-desc">Mental or physical battery depleted</span>
-                </div>
-              </button>
-
-              <button class="obstacle-btn" data-obstacle="dont-want-to">
-                <span class="obs-icon">😑</span>
-                <div class="obs-text">
-                  <span class="obs-title">I don't want to</span>
-                  <span class="obs-desc">Dread, resistance, or zero interest</span>
-                </div>
-              </button>
-
-              <button class="obstacle-btn" data-obstacle="distracted">
-                <span class="obs-icon">📱</span>
-                <div class="obs-text">
-                  <span class="obs-title">I'm distracted</span>
-                  <span class="obs-desc">Brain is jumping everywhere</span>
-                </div>
-              </button>
-
-              <button class="obstacle-btn" data-obstacle="something-else">
-                <span class="obs-icon">💭</span>
-                <div class="obs-text">
-                  <span class="obs-title">Something else is on my mind</span>
-                  <span class="obs-desc">Another worry or thought is blocking</span>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Unstuck Phase 2: Ridiculously Tiny Action -->
-        <div id="unstuck-view-phase2" class="unstuck-view-phase">
-          <button id="btn-unstuck-back-phase1" class="btn-unstuck-back">← Back to options</button>
-
-          <div class="unstuck-hero-text">
-            <span class="unstuck-calm-badge" id="tiny-step-badge">One tiny action</span>
-            <h2 class="unstuck-title" id="tiny-step-headline">Let's make it smaller.</h2>
-            <p class="unstuck-sub" id="tiny-step-subline">That's your only job right now.</p>
-          </div>
-
-          <div class="card tiny-action-spotlight">
-            <div class="spotlight-tag">YOUR ONLY MISSION</div>
-            <h3 class="spotlight-task" id="tiny-step-task-text">Open the presentation.</h3>
-            <p class="spotlight-reassurance" id="tiny-step-task-reassurance">You do not have to write, edit, or finish anything. Just open it.</p>
-          </div>
-
-          <!-- Specific branches for 'Something else on mind' -->
-          <div id="unstuck-mind-branch" style="display: none;" class="unstuck-branch-actions">
-            <p class="branch-advice">Maybe the task isn't the problem. When your brain is full of another thought, doing work is twice as hard.</p>
-            <div class="branch-btns">
-              <button class="btn btn-primary" id="btn-unstuck-goto-journal">
-                <span>Write it down in Journal 💭</span>
-              </button>
-              <button class="btn btn-ghost" id="btn-unstuck-mind-back">
-                <span>Go back</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Standard tiny step actions -->
-          <div id="unstuck-standard-branch" class="unstuck-action-stack">
-            <button class="btn btn-primary btn-large" id="btn-unstuck-did-step">
-              <span>I did this tiny step ✓</span>
+          <!-- Minimal Controls -->
+          <div class="focus-controls-cluster">
+            <button class="btn-focus-ctrl" id="btn-clock-toggle">
+              <span id="clock-toggle-icon">⏸️</span>
+              <span id="clock-toggle-text">Pause</span>
             </button>
-            <button class="btn btn-ghost" id="btn-unstuck-even-smaller">
-              <span>Make it even smaller</span>
+
+            <!-- Complete Session Trigger -> leads to user-drawn scratch -->
+            <button class="btn-focus-ctrl btn-complete-highlight" id="btn-clock-complete">
+              <span>Finish session</span>
+              <span>✨</span>
+            </button>
+
+            <button class="btn-focus-ctrl btn-break-prompt" id="btn-clock-break">
+              <span>Need a break</span>
+              <span>🫧</span>
             </button>
           </div>
         </div>
 
-        <!-- Unstuck Phase 3: Peaceful Momentum (No confetti, no badges, just quiet validation) -->
-        <div id="unstuck-view-phase3" class="unstuck-view-phase">
-          <div class="sprout-bloom-wrap">
-            <div class="gentle-sprout-icon">🌱</div>
-          </div>
+      </div>
+    </div>
 
-          <div class="unstuck-hero-text text-center">
-            <h2 class="unstuck-title">You moved. 🌱</h2>
-            <p class="unstuck-sub">A tiny step is a real step. You broke the inertia without fighting yourself.</p>
-          </div>
+    <!-- ====================================================================
+         STATE: USER-CONTROLLED PHYSICAL SCRATCH-OFF MODAL
+         "You did the thing. Scratch it off."
+         ==================================================================== -->
+    <div class="scratch-moment-overlay" id="scratch-moment-overlay" style="display: none;" aria-label="Task completion scratch sequence">
+      <div class="scratch-sequence-card" id="scratch-sequence-card">
+        <div class="scratch-modal-header">
+          <h1 class="scratch-modal-headline">You did the thing.</h1>
+          <p class="scratch-modal-sub">Scratch it off.</p>
+        </div>
 
-          <div class="card momentum-card">
-            <span class="momentum-question">Want to keep going?</span>
-            <div class="momentum-actions">
-              <button class="btn btn-primary" id="btn-unstuck-next-step">
-                <span>One more tiny step</span>
-              </button>
-              <button class="btn btn-secondary" id="btn-unstuck-done-now">
-                <span>I'm done for now</span>
-              </button>
+        <!-- The Paper Slip waiting for the USER'S physical stroke -->
+        <div class="sequence-slip" id="sequence-slip">
+          <span class="seq-slip-box" id="seq-slip-box">□</span>
+          <div class="seq-slip-content">
+            <span class="seq-slip-project" id="seq-slip-project">MARKETING PRESENTATION</span>
+            <div class="seq-scratch-interactive-zone" id="modal-scratch-zone">
+              <h2 class="seq-slip-title" id="seq-slip-title">Write the introduction</h2>
+              <!-- User draws freehand here with pointer / touch -->
+              <canvas class="modal-freehand-canvas" id="modal-freehand-canvas"></canvas>
             </div>
-            <span class="momentum-footnote">Starting is enough. You can close this anytime.</span>
+          </div>
+          <span class="seq-done-tag" id="seq-done-tag" style="display: none;">✓ DONE</span>
+        </div>
+
+        <div class="scratch-guidance-cue" id="scratch-guidance-cue">
+          <span class="cue-hand">✏️</span>
+          <span>Drag your finger or cursor across the words to cross it off</span>
+        </div>
+
+        <!-- Unlocked Pieces that Emerge & Float to World after user scratches -->
+        <div class="seq-emerging-pieces" id="seq-emerging-pieces">
+          <!-- Particles: 🌱 🌸 🪨 injected dynamically -->
+        </div>
+
+        <!-- Post-Scratch Options -->
+        <div class="seq-actions-row" id="seq-actions-row" style="display: none;">
+          <button class="btn-seq-world" id="btn-seq-open-world">See world grow 🌿</button>
+          <button class="btn-seq-desk" id="btn-seq-back-desk">Back to my day →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         STATE: THE LIVING WORLD & PLAY SPACE (The Fun Emotional Core)
+         ==================================================================== -->
+    <div class="world-play-screen" id="world-play-screen" style="display: none;" aria-label="Living World and Distraction Space">
+      <div class="world-play-container">
+        
+        <!-- Header with Return to Desk -->
+        <div class="world-play-header">
+          <div class="world-meta">
+            <button class="btn-back-to-desk" id="btn-back-to-desk">
+              <span class="back-arrow">←</span>
+              <span>Back to my day</span>
+            </button>
+            <h2 class="world-screen-title">Your September World</h2>
+          </div>
+
+          <!-- Sub-activities tabs -->
+          <div class="play-mode-pills">
+            <button class="play-tab active" data-sub="island" id="tab-sub-island">🌱 Living Island</button>
+            <button class="play-tab" data-sub="ripples" id="tab-sub-ripples">🫧 Zone Out</button>
+            <button class="play-tab" data-sub="sand" id="tab-sub-sand">🎨 Sand Zen</button>
+            <button class="play-tab" data-sub="pebbles" id="tab-sub-pebbles">🧩 Pebble Tinker</button>
+          </div>
+
+          <!-- Atmosphere & Timed Break -->
+          <div class="world-aux-actions">
+            <div class="time-of-day-toggles">
+              <button class="btn-tod active" data-time="day" title="Daylight">☀️</button>
+              <button class="btn-tod" data-time="sunset" title="Sunset">🌅</button>
+              <button class="btn-tod" data-time="night" title="Starlight">🌙</button>
+            </div>
+
+            <button class="btn-timed-break-play" id="btn-trigger-break-modal">
+              <span>Timed Break</span>
+              <span class="break-chip">5m</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUB-ACTIVITIES CONTENT -->
+        <div class="world-stage-body">
+          
+          <!-- 1. The Handcrafted Living Island -->
+          <div class="play-pane active" id="pane-island">
+            <div class="island-viewport" id="island-viewport">
+              <div class="island-sky">
+                <div class="celestial-orb" id="island-celestial"></div>
+                <div class="sky-cloud cloud-alpha"></div>
+                <div class="sky-cloud cloud-beta"></div>
+                <div class="sky-fauna">
+                  <span class="flutter-butterfly">🦋</span>
+                </div>
+              </div>
+
+              <!-- Interactive Island Ground -->
+              <div class="island-landscape" id="island-interactive-ground">
+                <div class="island-soil-mound"></div>
+                <div class="island-stream-river"></div>
+                <div class="island-entities-layer" id="island-entities-layer">
+                  <!-- Placed objects injected here -->
+                </div>
+              </div>
+
+              <!-- Bottom Inventory Shelf -->
+              <div class="island-inventory-dock">
+                <span class="dock-caption">Your unlocked pieces (tap or click terrain to place):</span>
+                <div class="dock-pieces-row" id="dock-pieces-row">
+                  <!-- Placed chips injected here -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Zone Out: Ripple Pond -->
+          <div class="play-pane" id="pane-ripples">
+            <div class="mini-activity-frame">
+              <div class="activity-top">
+                <h4>🫧 Water Ripple Pond</h4>
+                <p>Click or drag to send calming harmonic ripples across the dark water.</p>
+              </div>
+              <div class="activity-canvas-box">
+                <canvas id="pond-canvas"></canvas>
+                <div class="canvas-gentle-hint">Tap water to create ripples</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Sand Zen Garden -->
+          <div class="play-pane" id="pane-sand">
+            <div class="mini-activity-frame">
+              <div class="activity-top">
+                <h4>🎨 Sand Rake Garden</h4>
+                <p>Draw peaceful concentric lines in warm sand. Place smooth river stones.</p>
+                <div class="zen-action-bar">
+                  <button class="btn-zen-tool active" id="btn-sand-rake">Rake Sand</button>
+                  <button class="btn-zen-tool" id="btn-sand-stone">Place Stone 🪨</button>
+                  <button class="btn-zen-tool btn-zen-clear" id="btn-sand-smooth">Smooth</button>
+                </div>
+              </div>
+              <div class="activity-canvas-box sand-box">
+                <canvas id="zen-sand-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Pebble Tinker -->
+          <div class="play-pane" id="pane-pebbles">
+            <div class="mini-activity-frame">
+              <div class="activity-top">
+                <h4>🧩 Tactile Pebble Tinker</h4>
+                <p>Tap smooth pebbles to flip them and hear soothing marimba notes.</p>
+              </div>
+              <div class="pebble-grid-display" id="pebble-grid-display">
+                <!-- 16 Interactive Musical Stones -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         MODALS & OVERLAYS (QUIET & PROGRESSIVE)
+         ==================================================================== -->
+
+    <!-- Contextual Work Piece Popover (When clicking a dot) -->
+    <div class="piece-context-popover" id="piece-popover" style="display: none;" role="dialog">
+      <div class="popover-accent-line"></div>
+      <div class="popover-body">
+        <span class="popover-duration" id="popover-duration">30 MINUTE SESSION</span>
+        <h4 class="popover-task" id="popover-task">Write the introduction</h4>
+        <p class="popover-project" id="popover-project">Marketing Presentation</p>
+        <div class="popover-btns">
+          <button class="btn-popover-go" id="btn-popover-go">Start →</button>
+          <button class="btn-popover-scratch" id="btn-popover-scratch">Scratch it off ✏️</button>
+          <button class="btn-popover-hide" id="btn-popover-hide">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Task Entry Modal (Clean, quiet assistant) -->
+    <div class="modal-dim-backdrop" id="add-task-modal" style="display: none;">
+      <div class="modal-dialog-box" role="dialog" aria-labelledby="add-task-heading">
+        <div class="dialog-top">
+          <div class="dialog-heading-group">
+            <span class="dialog-sparkle">✨</span>
+            <h3 class="dialog-heading" id="add-task-heading">Add something</h3>
+          </div>
+          <button class="btn-close-dialog" id="btn-close-add-dialog" aria-label="Close">✕</button>
+        </div>
+
+        <div class="dialog-content">
+          <div class="field-wrap">
+            <label class="field-label" for="input-task-intent">What are you trying to do?</label>
+            <input 
+              type="text" 
+              id="input-task-intent" 
+              class="clean-input" 
+              placeholder="e.g. Finish my marketing presentation." 
+              autocomplete="off"
+            />
+            <div class="example-chips-rack">
+              <span class="chip-cue">Try:</span>
+              <button type="button" class="quick-chip" data-text="Finish my marketing presentation." data-due="FRI">Marketing presentation (Fri)</button>
+              <button type="button" class="quick-chip" data-text="Reply to internship emails" data-due="WED">Internship emails (Wed)</button>
+              <button type="button" class="quick-chip" data-text="Call dentist for appointment" data-due="THU">Dentist appointment (Thu)</button>
+            </div>
+          </div>
+
+          <div class="field-wrap">
+            <label class="field-label">When is it due?</label>
+            <div class="due-days-rack" id="due-days-rack">
+              <button type="button" class="day-select-pill" data-day="TUE">Tuesday</button>
+              <button type="button" class="day-select-pill" data-day="WED">Wednesday</button>
+              <button type="button" class="day-select-pill" data-day="THU">Thursday</button>
+              <button type="button" class="day-select-pill selected" data-day="FRI">Friday</button>
+              <button type="button" class="day-select-pill" data-day="SAT">Saturday</button>
+              <button type="button" class="day-select-pill" data-day="SUN">Sunday</button>
+            </div>
+          </div>
+
+          <!-- AI Quiet Assistant Box -->
+          <div class="ai-quiet-card" id="ai-quiet-card">
+            <div class="ai-whisper-header">
+              <span class="ai-tag">AI HELPER</span>
+              <span class="ai-friendly-note">Rough estimate. You're always in charge.</span>
+            </div>
+            <div class="ai-whisper-body" id="ai-whisper-body">
+              <p class="ai-recommend">Looks like about <strong>3 short sessions</strong> (30 min each).</p>
+              <p class="ai-question">Want me to spread those across your week?</p>
+            </div>
+            <div class="ai-choices-bar">
+              <button type="button" class="btn-ai-confirm" id="btn-ai-place-yes">Yes, place them →</button>
+              <button type="button" class="btn-ai-alt" id="btn-ai-place-smaller">Make it smaller</button>
+              <button type="button" class="btn-ai-alt" id="btn-ai-place-self">I'll do it myself</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ============================================================
-         ADD SOMETHING MODAL (Tasks, Reminders, Notes)
-         ============================================================ -->
-    <div id="add-modal-overlay" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h2 class="modal-title" id="add-modal-title">Put something in The Spare Room</h2>
-          <button id="btn-close-add-modal" class="modal-close-icon" aria-label="Close">✕</button>
-        </div>
+    <!-- Gentle Break Companion Modal -->
+    <div class="break-prompt-backdrop" id="break-prompt-modal" style="display: none;">
+      <div class="break-prompt-card">
+        <span class="break-tag">GENTLE RESET</span>
+        <h3 class="break-heading">Want a little break?</h3>
+        <p class="break-message">Take a breath. Avoid the infinite doom-scroll. Go play in your world or zone out—I'll come get you.</p>
 
-        <!-- Add Type Tabs: Task, Reminder, Note -->
-        <div class="modal-type-tabs" role="tablist">
-          <button class="modal-tab active" data-type="task" role="tab">📝 Task</button>
-          <button class="modal-tab" data-type="reminder" role="tab">⏰ Reminder</button>
-          <button class="modal-tab" data-type="note" role="tab">💡 Note</button>
-        </div>
-
-        <!-- Form for Adding -->
-        <form id="add-item-form" class="modal-form">
-          <!-- Title / Text input -->
-          <div class="form-group">
-            <label for="add-input-title" id="add-label-title">What is it?</label>
-            <input type="text" id="add-input-title" placeholder="e.g., Water the plants, Call dentist..." required>
-          </div>
-
-          <!-- Section specific to TASK -->
-          <div id="form-section-task" class="form-sub-section">
-            <div class="form-row-2col">
-              <div class="form-group">
-                <label for="add-select-category">Where does it belong?</label>
-                <select id="add-select-category">
-                  <option value="today">Today (Things that matter today)</option>
-                  <option value="soon">Soon (Sometime soon)</option>
-                  <option value="later">Later (Things that can wait)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="add-select-energy">Energy requirement</label>
-                <select id="add-select-energy">
-                  <option value="low">🌱 Low energy</option>
-                  <option value="medium" selected>🌿 Medium energy</option>
-                  <option value="high">🔥 High energy</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="add-input-tinystep">Next tiny step (Optional)</label>
-              <input type="text" id="add-input-tinystep" placeholder="e.g., Open the app, Pick up one item...">
-            </div>
-          </div>
-
-          <!-- Section specific to REMINDER -->
-          <div id="form-section-reminder" class="form-sub-section" style="display: none;">
-            <div class="form-row-2col">
-              <div class="form-group">
-                <label for="add-input-rem-date">Date</label>
-                <input type="date" id="add-input-rem-date">
-              </div>
-              <div class="form-group">
-                <label for="add-input-rem-time">Time</label>
-                <input type="time" id="add-input-rem-time" value="18:00">
-              </div>
-            </div>
-          </div>
-
-          <!-- Section specific to NOTE -->
-          <div id="form-section-note" class="form-sub-section" style="display: none;">
-            <div class="form-group">
-              <label for="add-note-placement">Where to pin it?</label>
-              <select id="add-note-placement">
-                <option value="home">Home (Something to remember)</option>
-                <option value="calendar">Today's Calendar Planner</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn btn-ghost" id="btn-cancel-add">Cancel</button>
-            <button type="submit" class="btn btn-primary" id="btn-save-add">Put it down</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Quick Schedule Date Picker Modal -->
-    <div id="schedule-modal-overlay" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
-      <div class="modal-card modal-sm">
-        <div class="modal-header">
-          <h2 class="modal-title">Schedule onto Calendar</h2>
-          <button id="btn-close-schedule-modal" class="modal-close-icon">✕</button>
-        </div>
-        <div class="modal-body">
-          <p class="modal-subtext" id="schedule-item-title">Item name</p>
-          <div class="form-group">
-            <label for="schedule-date-select">Choose a day:</label>
-            <select id="schedule-date-select">
-              <option value="2026-09-28">Monday 28 Sep</option>
-              <option value="2026-09-29">Tuesday 29 Sep</option>
-              <option value="2026-09-30">Wednesday 30 Sep</option>
-              <option value="2026-10-01">Thursday 1 Oct</option>
-              <option value="2026-10-02">Friday 2 Oct</option>
-              <option value="2026-10-03">Saturday 3 Oct</option>
-              <option value="2026-10-04">Sunday 4 Oct</option>
-            </select>
+        <div class="break-duration-picker">
+          <span class="picker-txt">How long?</span>
+          <div class="break-pills-row">
+            <button class="btn-break-opt active" data-mins="5">5 minutes</button>
+            <button class="btn-break-opt" data-mins="10">10 minutes</button>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" id="btn-cancel-schedule">Cancel</button>
-          <button class="btn btn-primary" id="btn-confirm-schedule">Place on date</button>
+
+        <div class="break-decision-row">
+          <button class="btn-confirm-break" id="btn-confirm-break">Go play. I'll come get you.</button>
+          <button class="btn-dismiss-break" id="btn-dismiss-break">Never mind, I'm working</button>
         </div>
       </div>
     </div>
 
-    <!-- Mobile Bottom Navigation Bar -->
-    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-      <button class="m-nav-item active" data-target="screen-home" id="m-nav-home">
-        <span class="m-icon">🏠</span>
-        <span class="m-label">Home</span>
-      </button>
-      <button class="m-nav-item" data-target="screen-calendar" id="m-nav-calendar">
-        <span class="m-icon">📅</span>
-        <span class="m-label">Calendar</span>
-      </button>
-      <button class="m-nav-item m-unstuck-btn" id="m-nav-unstuck" title="I'm stuck">
-        <span class="m-icon-unstuck">🛟</span>
-        <span class="m-label">Unstuck</span>
-      </button>
-      <button class="m-nav-item" data-target="screen-things" id="m-nav-things">
-        <span class="m-icon">📝</span>
-        <span class="m-label">Things</span>
-      </button>
-      <button class="m-nav-item" data-target="screen-journal" id="m-nav-journal">
-        <span class="m-icon">💭</span>
-        <span class="m-label">Journal</span>
-      </button>
-    </nav>
+    <!-- Gentle Break Ended Return Toast -->
+    <div class="gentle-return-toast" id="gentle-return-toast" style="display: none;">
+      <div class="toast-body">
+        <span class="toast-emoji">🌱</span>
+        <div class="toast-msg">
+          <span class="toast-headline">Okay, I'm stealing you back.</span>
+          <span class="toast-subtext">Whenever you're ready, let's take one little step.</span>
+        </div>
+      </div>
+      <div class="toast-btn-cluster">
+        <button class="btn-toast-return" id="btn-toast-return">Back to my task</button>
+        <button class="btn-toast-more" id="btn-toast-more">5 more minutes</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Micro-interaction feedback toast -->
-  <div id="calm-toast" class="calm-toast" role="status" aria-live="polite"></div>
-
-  <!-- Application Logic -->
   <script src="app.js"></script>
 </body>
 </html>

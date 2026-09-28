@@ -1,21 +1,17 @@
 /**
- * THE SPARE ROOM — Gentle Prototype
- * "A little extra space for your brain."
- *
- * Fully interactive prototype with local state, realistic data,
- * Web Audio sound design & ambient room sound, and smooth transitions.
+ * THE SPARE ROOM — TIME + WORK = WORLD
+ * Signature Interaction: Physical Hand-Drawn Scratch, Flying Seeds, Living World
  */
 
 // ============================================================================
-// 1. GENTLE AUDIO SYNTHESIZER (Web Audio API)
+// 1. GENTLE AUDIO SYNTHESIZER (Native Web Audio API)
 // ============================================================================
 class GentleAudioEngine {
   constructor() {
     this.ctx = null;
-    this.soundEffectsEnabled = true;
-    this.ambientPlaying = false;
-    this.ambientSource = null;
     this.ambientGain = null;
+    this.ambientSource = null;
+    this.isAmbientPlaying = false;
   }
 
   init() {
@@ -28,9 +24,8 @@ class GentleAudioEngine {
     }
   }
 
-  // Soft wooden tap / marimba click
-  playTap() {
-    if (!this.soundEffectsEnabled) return;
+  // Soft wooden tap
+  playTap(freq = 440) {
     try {
       this.init();
       if (!this.ctx) return;
@@ -39,10 +34,10 @@ class GentleAudioEngine {
       const gain = this.ctx.createGain();
 
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(480, now);
-      osc.frequency.exponentialRampToValueAtTime(240, now + 0.08);
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.08);
 
-      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.setValueAtTime(0.045, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
       osc.connect(gain);
@@ -50,1430 +45,2092 @@ class GentleAudioEngine {
 
       osc.start(now);
       osc.stop(now + 0.08);
-    } catch (e) {
-      // Audio autoplay policy fallback
-    }
+    } catch (e) {}
   }
 
-  // Warm chime for quiet validation / completion (E5 -> G#5)
-  playChime() {
-    if (!this.soundEffectsEnabled) return;
+  // Continuous real-time marker/pencil friction stream on rough paper
+  startScratchFriction() {
+    try {
+      this.init();
+      if (!this.ctx || this.frictionNode) return;
+
+      const sampleRate = this.ctx.sampleRate;
+      const buffer = this.ctx.createBuffer(1, sampleRate, sampleRate);
+      const data = buffer.getChannelData(0);
+      let lastVal = 0;
+      for (let i = 0; i < sampleRate; i++) {
+        const white = Math.random() * 2 - 1;
+        lastVal = (lastVal * 0.72 + white * 0.28);
+        const tooth = (Math.random() < 0.14) ? (Math.random() * 2 - 1) * 2.0 : 0;
+        data[i] = (lastVal * 2.0 + tooth * 0.7);
+      }
+
+      const src = this.ctx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+
+      // Resonant bandpass tuned to dry cardstock paper scraping (3400Hz - 4600Hz)
+      const bandpass = this.ctx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.setValueAtTime(3600, this.ctx.currentTime);
+      bandpass.Q.setValueAtTime(3.8, this.ctx.currentTime);
+
+      const highpass = this.ctx.createBiquadFilter();
+      highpass.type = 'highpass';
+      highpass.frequency.setValueAtTime(1200, this.ctx.currentTime);
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+
+      src.connect(highpass);
+      highpass.connect(bandpass);
+      bandpass.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      src.start();
+      this.frictionSrc = src;
+      this.frictionGain = gain;
+      this.frictionFilter = bandpass;
+      this.frictionNode = true;
+
+      // Subtle contact touch tick
+      this.playTap(260);
+    } catch (e) {}
+  }
+
+  // Real-time ASMR paper scratch crunch step on pointer movement
+  playPaperScratchStep(velocity, dist) {
     try {
       this.init();
       if (!this.ctx) return;
       const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
+      const sampleRate = this.ctx.sampleRate;
+
+      // 1. Crispy paper fiber crunch noise burst (14ms - 22ms)
+      const durationSec = Math.max(0.014, Math.min(0.024, 0.012 + dist * 0.0006));
+      const bufferSize = Math.floor(sampleRate * durationSec);
+      const buffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < bufferSize; i++) {
+        // Asymmetric decay with micro-grain spikes
+        const env = Math.exp(-i / (bufferSize * 0.45));
+        const grain = (Math.random() < 0.22) ? (Math.random() * 2 - 1) * 2.2 : (Math.random() * 2 - 1) * 0.8;
+        data[i] = grain * env;
+      }
+
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      // Resonant bandpass at paper scraping frequency (3400Hz - 5000Hz)
+      const bandpass = this.ctx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      const centerFreq = Math.min(5200, 3600 + velocity * 600 + Math.random() * 400);
+      bandpass.frequency.setValueAtTime(centerFreq, now);
+      bandpass.Q.setValueAtTime(3.4, now);
+
+      // Paper desk body resonator (850Hz)
+      const bodyFilter = this.ctx.createBiquadFilter();
+      bodyFilter.type = 'bandpass';
+      bodyFilter.frequency.setValueAtTime(850 + Math.random() * 200, now);
+      bodyFilter.Q.setValueAtTime(1.8, now);
+
       const gain = this.ctx.createGain();
+      const targetGain = Math.min(0.36, 0.12 + Math.min(velocity, 2.5) * 0.14);
+      gain.gain.setValueAtTime(targetGain, now);
+      gain.gain.exponentialRampToValueAtTime(0.0005, now + durationSec);
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(659.25, now); // E5
-      osc.frequency.exponentialRampToValueAtTime(830.61, now + 0.16); // G#5
-
-      gain.gain.setValueAtTime(0.09, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
-
-      osc.connect(gain);
+      noise.connect(bandpass);
+      noise.connect(bodyFilter);
+      bandpass.connect(gain);
+      bodyFilter.connect(gain);
       gain.connect(this.ctx.destination);
 
-      osc.start(now);
-      osc.stop(now + 0.9);
-    } catch (e) {
-      // Audio fallback
-    }
+      noise.start(now);
+    } catch (e) {}
   }
 
-  // Ambient gentle room sound (procedural pink noise filtered to simulate soft rain)
-  toggleAmbient(enable) {
+  updateScratchVelocity(velocity) {
+    if (!this.ctx || !this.frictionGain) return;
+    try {
+      const now = this.ctx.currentTime;
+      if (velocity > 0.02) {
+        const targetVol = Math.min(0.26, 0.06 + velocity * 0.12);
+        this.frictionGain.gain.cancelScheduledValues(now);
+        this.frictionGain.gain.setTargetAtTime(targetVol, now, 0.015);
+
+        if (this.frictionFilter) {
+          const targetFreq = Math.min(5000, 3200 + velocity * 600);
+          this.frictionFilter.frequency.setTargetAtTime(targetFreq, now, 0.02);
+        }
+      } else {
+        this.frictionGain.gain.setTargetAtTime(0.0001, now, 0.03);
+      }
+    } catch (e) {}
+  }
+
+  stopScratchFriction() {
+    if (!this.ctx || !this.frictionGain) return;
+    try {
+      const now = this.ctx.currentTime;
+      this.frictionGain.gain.cancelScheduledValues(now);
+      this.frictionGain.gain.setTargetAtTime(0.0001, now, 0.02);
+      setTimeout(() => {
+        if (this.frictionSrc) {
+          try { this.frictionSrc.stop(); } catch(e){}
+          try { this.frictionSrc.disconnect(); } catch(e){}
+        }
+        this.frictionSrc = null;
+        this.frictionGain = null;
+        this.frictionFilter = null;
+        this.frictionNode = false;
+      }, 35);
+    } catch (e) {}
+  }
+
+  // Tactile physical stamp impact thud on completion
+  playStampThud() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+
+      // 1. Resonant desk punch (low sine dropping fast)
+      const osc = this.ctx.createOscillator();
+      const oscGain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(170, now);
+      osc.frequency.exponentialRampToValueAtTime(36, now + 0.12);
+
+      oscGain.gain.setValueAtTime(0.32, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+
+      osc.connect(oscGain);
+      oscGain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.13);
+
+      // 2. Paper snap / crackle
+      const bufferSize = Math.floor(this.ctx.sampleRate * 0.035);
+      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+      }
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = noiseBuffer;
+      const nGain = this.ctx.createGain();
+      nGain.gain.setValueAtTime(0.24, now);
+      nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+      noise.connect(nGain);
+      nGain.connect(this.ctx.destination);
+      noise.start(now);
+    } catch (e) {}
+  }
+
+  // Dopamine Chime: Lush, resonant, warm celestial chord
+  playDopamineChime() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const notes = [
+        { freq: 523.25, time: 0.00, gain: 0.16 }, // C5
+        { freq: 659.25, time: 0.06, gain: 0.18 }, // E5
+        { freq: 783.99, time: 0.12, gain: 0.20 }, // G5
+        { freq: 1046.50, time: 0.18, gain: 0.24 }, // C6
+        { freq: 1318.51, time: 0.24, gain: 0.16 }  // E6
+      ];
+
+      notes.forEach(({ freq, time, gain: maxGain }) => {
+        const now = this.ctx.currentTime + time;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(maxGain, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 1.65);
+      });
+    } catch (e) {}
+  }
+
+  // Legacy fallback
+  playChime() {
+    this.playDopamineChime();
+  }
+
+  // Procedural ambient rain
+  toggleAmbientRain(shouldPlay) {
     this.init();
     if (!this.ctx) return false;
 
-    if (enable && !this.ambientPlaying) {
-      try {
-        const bufferSize = 2 * this.ctx.sampleRate;
-        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-
-        for (let i = 0; i < bufferSize; i++) {
-          const white = Math.random() * 2 - 1;
-          b0 = 0.99886 * b0 + white * 0.0555179;
-          b1 = 0.99332 * b1 + white * 0.0750759;
-          b2 = 0.96900 * b2 + white * 0.1538520;
-          b3 = 0.86650 * b3 + white * 0.3104856;
-          b4 = 0.55000 * b4 + white * 0.5329522;
-          b5 = -0.7616 * b5 - white * 0.0168980;
-          output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-          output[i] *= 0.04;
-          b6 = white * 0.115926;
-        }
-
-        const whiteNoise = this.ctx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
-        whiteNoise.loop = true;
-
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(650, this.ctx.currentTime);
-
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
-
-        whiteNoise.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        whiteNoise.start();
-        this.ambientSource = whiteNoise;
-        this.ambientGain = gain;
-        this.ambientPlaying = true;
-        return true;
-      } catch (e) {
-        return false;
+    if (shouldPlay && !this.isAmbientPlaying) {
+      const bufferSize = this.ctx.sampleRate * 2;
+      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let lastOut = 0.0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        output[i] = (lastOut + 0.02 * white) / 1.02;
+        lastOut = output[i];
       }
-    } else if (!enable && this.ambientPlaying) {
-      if (this.ambientSource) {
-        try {
-          this.ambientSource.stop();
-          this.ambientSource.disconnect();
-        } catch (e) {}
+
+      const whiteNoise = this.ctx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, this.ctx.currentTime);
+
+      this.ambientGain = this.ctx.createGain();
+      this.ambientGain.gain.setValueAtTime(0.025, this.ctx.currentTime);
+
+      whiteNoise.connect(filter);
+      filter.connect(this.ambientGain);
+      this.ambientGain.connect(this.ctx.destination);
+
+      whiteNoise.start();
+      this.ambientSource = whiteNoise;
+      this.isAmbientPlaying = true;
+      return true;
+    } else if (!shouldPlay && this.isAmbientPlaying) {
+      if (this.ambientGain) {
+        this.ambientGain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.4);
+        setTimeout(() => {
+          if (this.ambientSource) {
+            this.ambientSource.stop();
+            this.ambientSource.disconnect();
+          }
+          this.isAmbientPlaying = false;
+        }, 400);
       }
-      this.ambientPlaying = false;
       return false;
     }
-    return this.ambientPlaying;
+    return this.isAmbientPlaying;
   }
 }
 
 const audio = new GentleAudioEngine();
 
 // ============================================================================
-// 2. CENTRAL LOCAL STATE & MOCK DATA
+// 2. STATE STORE & DEMO DATA
 // ============================================================================
 const AppState = {
-  activeScreen: 'screen-home',
-  currentMood: null,
-  energyFilter: 'all',
+  activeProjectId: 'proj-1',
+  isDrawerOpen: false,
 
-  // Home Focus Item
-  homeFocus: {
-    title: 'Finish presentation',
-    step: 'Open the presentation.',
-    energy: 'high',
-    subtext: 'You do not have to write, edit, or finish anything. Just open it.',
-    completed: false
-  },
+  // Completed items shelf
+  completedSlips: [],
 
-  // Home Reminder
-  homeReminder: {
-    title: 'Swimming · 6:00 PM',
-    sub: 'Pack your goggles and towel beforehand',
-    completed: false
-  },
-
-  // Home Note to remember
-  homeRemember: {
-    text: 'Buy paint on the way home.',
-    completed: false
-  },
-
-  // Still on my mind list
-  mindItems: [
-    { id: 'm1', title: 'Finish portfolio', energy: 'medium', step: 'Pick one project to look at' },
-    { id: 'm2', title: 'Call dentist', energy: 'low', step: 'Find the clinic number' },
-    { id: 'm3', title: 'Buy birthday gift', energy: 'low', step: 'Write 2 small ideas' },
-    { id: 'm4', title: 'Pay electricity bill', energy: 'low', step: 'Open the utility app' }
+  // Demo Projects
+  projects: [
+    {
+      id: 'proj-1',
+      title: 'Marketing Presentation',
+      deadlineDay: 'FRI',
+      deadlineText: 'Friday',
+      totalSessions: 3,
+      sessionDurationMin: 30,
+      sessions: [
+        {
+          id: 'sess-1',
+          projectId: 'proj-1',
+          day: 'MON',
+          title: 'Write the introduction',
+          durationMin: 30,
+          completed: false,
+          isToday: true
+        },
+        {
+          id: 'sess-2',
+          projectId: 'proj-1',
+          day: 'TUE',
+          title: 'Draft slides 1–6 (Core thesis)',
+          durationMin: 30,
+          completed: false,
+          isToday: false
+        },
+        {
+          id: 'sess-3',
+          projectId: 'proj-1',
+          day: 'THU',
+          title: 'Polish design & rehearse 5m pitch',
+          durationMin: 30,
+          completed: false,
+          isToday: false
+        }
+      ]
+    },
+    {
+      id: 'proj-2',
+      title: 'Reply to internship emails',
+      deadlineDay: 'WED',
+      deadlineText: 'Wednesday',
+      totalSessions: 2,
+      sessionDurationMin: 30,
+      sessions: [
+        {
+          id: 'sess-2-1',
+          projectId: 'proj-2',
+          day: 'MON',
+          title: 'Draft email responses to Acme & Studio',
+          durationMin: 30,
+          completed: false,
+          isToday: true
+        },
+        {
+          id: 'sess-2-2',
+          projectId: 'proj-2',
+          day: 'TUE',
+          title: 'Attach portfolio links & send',
+          durationMin: 30,
+          completed: false,
+          isToday: false
+        }
+      ]
+    },
+    {
+      id: 'proj-3',
+      title: 'Book dentist appointment',
+      deadlineDay: 'THU',
+      deadlineText: 'Thursday',
+      totalSessions: 1,
+      sessionDurationMin: 15,
+      sessions: [
+        {
+          id: 'sess-3-1',
+          projectId: 'proj-3',
+          day: 'MON',
+          title: 'Call clinic & confirm insurance coverage',
+          durationMin: 15,
+          completed: false,
+          isToday: true
+        }
+      ]
+    }
   ],
 
-  // Things Organizer (Today, Soon, Later)
-  things: {
-    today: [
-      { id: 't1', title: 'Finish presentation', energy: 'high', step: 'Open the presentation.', done: false },
-      { id: 't2', title: 'Reply to Isha', energy: 'low', step: 'Just read her message first.', done: false },
-      { id: 't3', title: 'Swim session', energy: 'medium', step: 'Put towel in backpack.', done: false }
+  // 7 Days of the Week
+  days: [
+    { dayCode: 'MON', dateNumber: '28', isToday: true },
+    { dayCode: 'TUE', dateNumber: '29', isToday: false },
+    { dayCode: 'WED', dateNumber: '30', isToday: false },
+    { dayCode: 'THU', dateNumber: '1',  isToday: false },
+    { dayCode: 'FRI', dateNumber: '2',  isToday: false },
+    { dayCode: 'SAT', dateNumber: '3',  isToday: false },
+    { dayCode: 'SUN', dateNumber: '4',  isToday: false }
+  ],
+
+  // The Living World
+  world: {
+    month: 'September',
+    theme: 'day', // 'day' | 'sunset' | 'night'
+    unlockedPieces: [
+      { id: 'p-1', name: 'Wildflower Patch', icon: '🌸', count: 2 },
+      { id: 'p-2', name: 'Ancient Oak', icon: '🌳', count: 1 },
+      { id: 'p-3', name: 'Cozy Cabin', icon: '🏡', count: 1 },
+      { id: 'p-4', name: 'Stone Lantern', icon: '🏮', count: 2 },
+      { id: 'p-5', name: 'Pond Duck', icon: '🦆', count: 1 },
+      { id: 'p-6', name: 'River Stone', icon: '🪨', count: 3 }
     ],
-    soon: [
-      { id: 't4', title: 'Book dentist', energy: 'medium', step: 'Check open dates on phone.', done: false },
-      { id: 't5', title: 'Buy birthday gift', energy: 'low', step: 'Jot down 2 ideas.', done: false },
-      { id: 't6', title: 'Review health insurance', energy: 'medium', step: 'Log in to portal.', done: false }
-    ],
-    later: [
-      { id: 't7', title: 'Clean cupboard', energy: 'medium', step: 'Sort just one single shelf.', done: false },
-      { id: 't8', title: 'Research Japan trip', energy: 'low', step: 'Save one scenic place to a list.', done: false },
-      { id: 't9', title: 'Organize photo albums', energy: 'low', step: 'Look through 5 pictures.', done: false }
+    placedEntities: [
+      { id: 'e-1', icon: '🏡', label: 'Cozy Cabin', x: 44, y: 46 },
+      { id: 'e-2', icon: '🌳', label: 'Ancient Oak', x: 28, y: 40 },
+      { id: 'e-3', icon: '🌳', label: 'Birch Grove', x: 66, y: 42 },
+      { id: 'e-4', icon: '🌸', label: 'Wildflower Meadow', x: 36, y: 58 },
+      { id: 'e-5', icon: '🌸', label: 'Poppy Cluster', x: 60, y: 62 },
+      { id: 'e-6', icon: '🪨', label: 'River Stone', x: 50, y: 52 },
+      { id: 'e-7', icon: '🦆', label: 'Pond Duck', x: 54, y: 48 },
+      { id: 'e-8', icon: '🏮', label: 'Tea Lantern', x: 46, y: 64 }
     ]
   },
 
-  // Calendar Planner (Physical desk planner translated to digital)
-  calendar: [
-    {
-      dateKey: '2026-09-28',
-      dayName: 'MON',
-      dayNum: '28',
-      isToday: false,
-      items: [
-        { type: 'reminder', title: 'Dentist · 4 PM', sub: 'Clinic downtown' },
-        { type: 'task', title: 'Submit assignment', energy: 'high' },
-        { type: 'note', noteText: 'Bring insurance card and medical record' }
-      ]
-    },
-    {
-      dateKey: '2026-09-29',
-      dayName: 'TUE',
-      dayNum: '29',
-      isToday: true,
-      items: [
-        { type: 'task', title: 'Gym workout', energy: 'low' },
-        { type: 'task', title: 'Buy groceries', energy: 'medium' },
-        { type: 'reminder', title: 'Swimming · 6:00 PM', sub: 'Bring goggles' }
-      ]
-    },
-    {
-      dateKey: '2026-09-30',
-      dayName: 'WED',
-      dayNum: '30',
-      isToday: false,
-      items: [
-        { type: 'task', title: 'Call Mom', energy: 'low' },
-        { type: 'reminder', title: 'Evening walk · 7:30 PM', sub: 'With tea' }
-      ]
-    },
-    {
-      dateKey: '2026-10-01',
-      dayName: 'THU',
-      dayNum: '1',
-      isToday: false,
-      items: [
-        { type: 'task', title: 'Water the plants', energy: 'low' },
-        { type: 'note', noteText: 'Book package delivery expected afternoon' }
-      ]
-    },
-    {
-      dateKey: '2026-10-02',
-      dayName: 'FRI',
-      dayNum: '2',
-      isToday: false,
-      items: [
-        { type: 'task', title: 'Team recap', energy: 'medium' },
-        { type: 'reminder', title: 'Movie night · 8:00 PM', sub: 'Relax' }
-      ]
-    },
-    {
-      dateKey: '2026-10-03',
-      dayName: 'SAT',
-      dayNum: '3',
-      isToday: false,
-      items: [
-        { type: 'note', noteText: 'Quiet reading morning. No screens until noon.' }
-      ]
-    },
-    {
-      dateKey: '2026-10-04',
-      dayName: 'SUN',
-      dayNum: '4',
-      isToday: false,
-      items: [
-        { type: 'task', title: 'Gentle weekly prep', energy: 'low' }
-      ]
-    }
-  ],
+  // Focus Timer
+  focusTimer: {
+    activeSessionId: null,
+    durationMins: 30,
+    totalSeconds: 30 * 60,
+    remainingSeconds: 30 * 60,
+    isRunning: false,
+    intervalId: null
+  },
 
-  // Journal Entries
-  journalEntries: [
-    {
-      id: 'j1',
-      date: 'Today · 9:14 PM',
-      mood: '🫠',
-      text: 'I have so much to do and somehow starting any of it feels impossible.'
-    },
-    {
-      id: 'j2',
-      date: 'Yesterday · 7:42 PM',
-      mood: '😵💫',
-      text: 'Maybe I don\'t need to finish everything. Maybe I just need to start with one thing.'
-    },
-    {
-      id: 'j3',
-      date: 'Sep 25 · 3:15 PM',
-      mood: '✨',
-      text: 'Took a walk without my phone. The air was cool and my mind finally stopped buzzing for twenty minutes.'
-    }
-  ],
-
-  // Unstuck Mode Context
-  unstuck: {
-    currentTask: 'Finish my presentation',
-    obstacle: null,
-    tinyStep: 'Open the presentation.',
-    reassurance: 'You do not have to write, edit, or finish anything. Just open it.',
-    stepIndex: 0,
-    evenSmallerSteps: []
+  // Break Companion
+  breakTimer: {
+    durationMins: 5,
+    remainingSeconds: 5 * 60,
+    isRunning: false,
+    intervalId: null
   }
 };
 
 // ============================================================================
-// 3. TOAST NOTIFICATIONS (Gentle & Calming)
+// 3. FREEHAND REAL-TIME TACTILE SCRATCH ENGINE
 // ============================================================================
-function showCalmToast(message, duration = 3400) {
-  const toast = document.getElementById('calm-toast');
-  if (!toast) return;
-  toast.textContent = message;
-  toast.classList.add('visible');
+class FreehandScratcher {
+  constructor({ canvas, textElement, slipElement, onProgress, onComplete }) {
+    this.canvas = canvas;
+    this.textEl = textElement;
+    this.slipEl = slipElement || canvas.closest('.sequence-slip') || canvas.closest('.paper-task-slip');
+    this.onProgress = onProgress || null;
+    this.onComplete = onComplete;
+    this.ctx = canvas.getContext('2d');
+    this.isDrawing = false;
+    this.isCompleted = false;
+    this.coveredMinX = Infinity;
+    this.coveredMaxX = -Infinity;
+    this.points = [];
+    this.allStrokes = [];
+    this.lastX = 0;
+    this.lastY = 0;
+    this.lastTime = 0;
+    this.prevMid = null;
 
-  clearTimeout(toast._timeout);
-  toast._timeout = setTimeout(() => {
-    toast.classList.remove('visible');
-  }, duration);
-}
+    this.resize = this.resize.bind(this);
+    this.onPointerDown = this.onPointerDown.bind(this);
+    this.onPointerMove = this.onPointerMove.bind(this);
+    this.onPointerUp = this.onPointerUp.bind(this);
 
-// ============================================================================
-// 4. NAVIGATION HANDLER
-// ============================================================================
-function navigateToScreen(targetScreenId) {
-  audio.playTap();
-
-  // Update tabs
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    const isTarget = tab.getAttribute('data-target') === targetScreenId;
-    tab.classList.toggle('active', isTarget);
-  });
-
-  document.querySelectorAll('.m-nav-item').forEach(tab => {
-    const isTarget = tab.getAttribute('data-target') === targetScreenId;
-    tab.classList.toggle('active', isTarget);
-  });
-
-  // Switch screen views
-  document.querySelectorAll('.screen-view').forEach(screen => {
-    screen.classList.remove('active');
-  });
-
-  const activeScreen = document.getElementById(targetScreenId);
-  if (activeScreen) {
-    activeScreen.classList.add('active');
-    AppState.activeScreen = targetScreenId;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-}
-
-// ============================================================================
-// 5. RENDERING FUNCTIONS
-// ============================================================================
-
-// Render Home Screen Components
-function renderHomeScreen() {
-  // Update Greeting based on time of day
-  const hour = new Date().getHours();
-  const greetingEl = document.getElementById('home-greeting-heading');
-  if (greetingEl) {
-    let greet = 'Good morning 🌱';
-    if (hour >= 12 && hour < 17) greet = 'Good afternoon 🌱';
-    else if (hour >= 17) greet = 'Good evening 🌱';
-    greetingEl.textContent = greet;
+    this.initEvents();
+    this.resize();
   }
 
-  // Focus Task Card
-  const focusTitle = document.getElementById('home-focus-title');
-  const focusStep = document.getElementById('home-focus-step');
-  const focusCard = document.getElementById('home-focus-card');
-  if (focusTitle && focusStep && focusCard) {
-    if (AppState.homeFocus.completed) {
-      focusCard.style.opacity = '0.55';
-      focusTitle.style.textDecoration = 'line-through';
-    } else {
-      focusCard.style.opacity = '1';
-      focusTitle.style.textDecoration = 'none';
-      focusTitle.textContent = AppState.homeFocus.title;
-      focusStep.textContent = AppState.homeFocus.step;
-    }
+  resize() {
+    if (!this.canvas) return;
+    const rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width = Math.floor(rect.width * dpr);
+    this.canvas.height = Math.floor(rect.height * dpr);
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.ctx.scale(dpr, dpr);
+    this.redraw();
   }
 
-  // Reminder Card
-  const remTitle = document.getElementById('home-reminder-title');
-  const remCard = document.getElementById('home-reminder-card');
-  if (remTitle && remCard) {
-    if (AppState.homeReminder.completed) {
-      remCard.style.display = 'none';
-    } else {
-      remCard.style.display = 'flex';
-      remTitle.textContent = AppState.homeReminder.title;
-    }
-  }
-
-  // Remember Card
-  const remNoteText = document.getElementById('home-remember-text');
-  const remNoteCard = document.getElementById('home-remember-card');
-  if (remNoteText && remNoteCard) {
-    if (AppState.homeRemember.completed) {
-      remNoteCard.style.display = 'none';
-    } else {
-      remNoteCard.style.display = 'flex';
-      remNoteText.textContent = AppState.homeRemember.text;
-    }
-  }
-
-  // Still on my mind list
-  const mindList = document.getElementById('home-mind-list');
-  if (mindList) {
-    if (AppState.mindItems.length === 0) {
-      mindList.innerHTML = `<li class="mind-empty" style="text-align: center; color: var(--text-muted); font-size: 0.88rem; padding: 18px 0;">All clear. Your head has room to breathe. 🌿</li>`;
-    } else {
-      mindList.innerHTML = AppState.mindItems.map(item => `
-        <li class="mind-item" data-id="${item.id}">
-          <div class="mind-item-top">
-            <div class="mind-title-wrap">
-              <input type="checkbox" class="mind-checkbox" title="Mark done">
-              <span class="mind-title">${escapeHTML(item.title)}</span>
-            </div>
-            <span class="energy-badge energy-${item.energy}">
-              ${item.energy === 'low' ? '🌱 Low' : item.energy === 'medium' ? '🌿 Med' : '🔥 High'}
-            </span>
-          </div>
-          <div class="mind-actions">
-            <button class="btn-pill-action action-schedule-pill" data-id="${item.id}" data-title="${escapeHTML(item.title)}">Schedule</button>
-            <button class="btn-pill-action action-remind-pill" data-id="${item.id}">Remind me</button>
-            <button class="btn-pill-action action-unstuck-pill" data-id="${item.id}" data-title="${escapeHTML(item.title)}">🛟 Make smaller</button>
-            <button class="btn-pill-action action-nottoday-pill" data-id="${item.id}" title="Quietly move to Later with no guilt">Not today</button>
-          </div>
-        </li>
-      `).join('');
-    }
-  }
-}
-
-// Render Calendar Planner Desk (Spacious physical planner)
-function renderCalendar() {
-  const grid = document.getElementById('planner-days-grid');
-  if (!grid) return;
-
-  grid.innerHTML = AppState.calendar.map(day => `
-    <div class="planner-day-col ${day.isToday ? 'is-today' : ''}" data-date="${day.dateKey}">
-      <div class="day-header">
-        <div class="day-title-wrap">
-          <span class="day-name">${day.dayName}</span>
-          <span class="day-num">${day.dayNum}</span>
-        </div>
-        ${day.isToday ? '<span class="day-today-tag">TODAY</span>' : ''}
-      </div>
-
-      <ul class="day-entries-list">
-        ${day.items.map(item => {
-          if (item.type === 'reminder') {
-            return `
-              <li class="planner-item item-type-reminder">
-                <div class="planner-item-row">
-                  <span class="planner-item-title">⏰ ${escapeHTML(item.title)}</span>
-                </div>
-                ${item.sub ? `<span class="planner-item-time">${escapeHTML(item.sub)}</span>` : ''}
-              </li>
-            `;
-          } else if (item.type === 'task') {
-            return `
-              <li class="planner-item item-type-task">
-                <div class="planner-item-row">
-                  <span class="planner-item-title">📝 ${escapeHTML(item.title)}</span>
-                  ${item.energy ? `<span class="energy-badge energy-${item.energy}" style="font-size:0.65rem; padding:1px 5px;">${item.energy === 'low' ? '🌱' : item.energy === 'medium' ? '🌿' : '🔥'}</span>` : ''}
-                </div>
-              </li>
-            `;
-          } else {
-            return `
-              <li class="planner-item item-type-note">
-                <div class="planner-item-row">
-                  <span class="planner-item-note-text">💡 "${escapeHTML(item.noteText)}"</span>
-                </div>
-              </li>
-            `;
-          }
-        }).join('')}
-      </ul>
-
-      <button class="day-add-btn" data-date="${day.dateKey}" data-dayname="${day.dayName} ${day.dayNum}">+ Add item</button>
-    </div>
-  `).join('');
-}
-
-// Render Things Screen (TODAY, SOON, LATER) with energy filtering
-function renderThings() {
-  const filter = AppState.energyFilter;
-
-  const renderColumn = (items, containerId, countId, category) => {
-    const container = document.getElementById(containerId);
-    const countEl = document.getElementById(countId);
-    if (!container) return;
-
-    let filtered = items;
-    if (filter !== 'all') {
-      filtered = items.filter(i => i.energy === filter);
-    }
-
-    if (countEl) countEl.textContent = filtered.length;
-
-    if (filtered.length === 0) {
-      container.innerHTML = `<div style="text-align:center; padding: 24px 0; color: var(--text-muted); font-size: 0.85rem; font-style: italic;">Nothing here right now. Put something down when you need to.</div>`;
-      return;
-    }
-
-    container.innerHTML = filtered.map(item => `
-      <div class="thing-card ${item.done ? 'completed' : ''}" data-id="${item.id}" data-category="${category}">
-        <div class="thing-card-top">
-          <span class="thing-title">${escapeHTML(item.title)}</span>
-          <span class="energy-badge energy-${item.energy}">
-            ${item.energy === 'low' ? '🌱 Low' : item.energy === 'medium' ? '🌿 Med' : '🔥 High'}
-          </span>
-        </div>
-
-        ${item.step ? `
-          <div class="thing-micro-step">
-            <span>🌱 Tiny step: ${escapeHTML(item.step)}</span>
-          </div>
-        ` : ''}
-
-        <div class="thing-actions-row">
-          <button class="btn-thing-action action-done" data-id="${item.id}" data-category="${category}">
-            ${item.done ? 'Undo' : '✓ Done'}
-          </button>
-          <button class="btn-thing-action action-schedule" data-id="${item.id}" data-title="${escapeHTML(item.title)}">Schedule</button>
-          <button class="btn-thing-action action-remind" data-id="${item.id}">Remind me</button>
-          <button class="btn-thing-action action-unstuck" data-id="${item.id}" data-title="${escapeHTML(item.title)}">🛟 Make smaller</button>
-          <button class="btn-thing-action action-nottoday" data-id="${item.id}" data-category="${category}" title="Move quietly to Later">Not today</button>
-        </div>
-      </div>
-    `).join('');
-  };
-
-  renderColumn(AppState.things.today, 'list-things-today', 'count-today', 'today');
-  renderColumn(AppState.things.soon, 'list-things-soon', 'count-soon', 'soon');
-  renderColumn(AppState.things.later, 'list-things-later', 'count-later', 'later');
-}
-
-// Render Journal Entries
-function renderJournal() {
-  const container = document.getElementById('journal-entries-container');
-  if (!container) return;
-
-  if (AppState.journalEntries.length === 0) {
-    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-style: italic; padding: 20px;">Your notebook is open and ready. Put down whatever comes to mind.</div>`;
-    return;
-  }
-
-  container.innerHTML = AppState.journalEntries.map(entry => `
-    <article class="journal-entry-card" data-id="${entry.id}">
-      <div class="entry-header">
-        <span class="entry-date">${escapeHTML(entry.date)}</span>
-        <span class="entry-mood-badge">${escapeHTML(entry.mood)}</span>
-      </div>
-      <p class="entry-body-text">${escapeHTML(entry.text)}</p>
-    </article>
-  `).join('');
-}
-
-// Helper: Escape HTML string
-function escapeHTML(str) {
-  if (!str) return '';
-  return str.replace(/[&<>'"]/g, tag => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    "'": '&#39;',
-    '"': '&quot;'
-  }[tag] || tag));
-}
-
-// ============================================================================
-// 6. MOOD CHECK-IN BEHAVIOR
-// ============================================================================
-function setupMoodCheckin() {
-  const moodResponses = {
-    overwhelmed: {
-      text: "Breathe out. When everything is loud, you only have to do one tiny thing at a time. The rest can wait in The Spare Room.",
-      actionText: "Break down what's in front of you 🛟",
-      action: () => launchUnstuckMode("Finish my presentation", "overwhelming")
-    },
-    stuck: {
-      text: "Inertia is completely normal and not a character flaw. Let's find one physical action that takes almost zero effort.",
-      actionText: "Launch Unstuck Mode 🛟",
-      action: () => launchUnstuckMode("Finish my presentation", "dont-know-start")
-    },
-    'low-energy': {
-      text: "Honor your battery today. You don't have to push through exhaustion. Let's look at gentle things that require almost nothing.",
-      actionText: "Filter by 🌱 Low energy tasks",
-      action: () => {
-        AppState.energyFilter = 'low';
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.getAttribute('data-energy') === 'low'));
-        renderThings();
-        navigateToScreen('screen-things');
-        showCalmToast("Filtered to low energy tasks. Rest whenever you need 🌱");
+  redraw() {
+    if (!this.allStrokes || this.allStrokes.length === 0) return;
+    for (const stroke of this.allStrokes) {
+      if (stroke.length < 2) continue;
+      let prevMid = { x: stroke[0].x, y: stroke[0].y };
+      for (let i = 1; i < stroke.length; i++) {
+        const pt = stroke[i];
+        const nextMid = { x: (stroke[i - 1].x + pt.x) / 2, y: (stroke[i - 1].y + pt.y) / 2 };
+        this.renderCurve(prevMid, stroke[i - 1], nextMid, pt.width);
+        prevMid = nextMid;
       }
-    },
-    okay: {
-      text: "Steady is a lovely place to be. Take things at a peaceful pace today, one item at a time.",
-      actionText: "View Today's items",
-      action: () => navigateToScreen('screen-things')
-    },
-    good: {
-      text: "Wonderful. Enjoy your natural energy, but remember you still don't have to carry the whole world today.",
-      actionText: "Check your planner 📅",
-      action: () => navigateToScreen('screen-calendar')
-    }
-  };
-
-  const pills = document.querySelectorAll('.mood-pill');
-  const responseBox = document.getElementById('mood-response-box');
-  const responseText = document.getElementById('mood-response-text');
-  const responseAction = document.getElementById('mood-response-action');
-
-  pills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      audio.playTap();
-      const mood = pill.getAttribute('data-mood');
-      AppState.currentMood = mood;
-
-      pills.forEach(p => p.classList.remove('selected'));
-      pill.classList.add('selected');
-
-      const data = moodResponses[mood];
-      if (data && responseBox && responseText && responseAction) {
-        responseText.textContent = data.text;
-        responseAction.textContent = data.actionText;
-        responseAction.onclick = () => {
-          audio.playTap();
-          data.action();
-        };
-        responseBox.style.display = 'flex';
-      }
-    });
-  });
-}
-
-// ============================================================================
-// 7. UNSTUCK MODE LOGIC (The gentle step-down engine)
-// ============================================================================
-function launchUnstuckMode(taskName = 'Finish my presentation', preselectedObstacle = null) {
-  audio.playTap();
-  const overlay = document.getElementById('unstuck-modal-overlay');
-  const taskInput = document.getElementById('unstuck-task-name-input');
-  if (!overlay) return;
-
-  AppState.unstuck.currentTask = taskName;
-  AppState.unstuck.stepIndex = 0;
-  if (taskInput) taskInput.value = taskName;
-
-  // Show Phase 1 by default
-  showUnstuckPhase(1);
-  overlay.classList.add('active');
-
-  if (preselectedObstacle) {
-    handleObstacleSelect(preselectedObstacle);
-  }
-}
-
-function closeUnstuckMode() {
-  audio.playTap();
-  const overlay = document.getElementById('unstuck-modal-overlay');
-  if (overlay) overlay.classList.remove('active');
-}
-
-function showUnstuckPhase(phaseNum) {
-  document.querySelectorAll('.unstuck-view-phase').forEach(el => el.classList.remove('active'));
-  const target = document.getElementById(`unstuck-view-phase${phaseNum}`);
-  if (target) target.classList.add('active');
-}
-
-function handleObstacleSelect(obstacleType) {
-  audio.playTap();
-  AppState.unstuck.obstacle = obstacleType;
-  const taskName = document.getElementById('unstuck-task-name-input')?.value || AppState.unstuck.currentTask;
-
-  const headlineEl = document.getElementById('tiny-step-headline');
-  const sublineEl = document.getElementById('tiny-step-subline');
-  const taskTextEl = document.getElementById('tiny-step-task-text');
-  const reassureEl = document.getElementById('tiny-step-task-reassurance');
-  const standardBranch = document.getElementById('unstuck-standard-branch');
-  const mindBranch = document.getElementById('unstuck-mind-branch');
-
-  // Reset branches
-  if (standardBranch) standardBranch.style.display = 'flex';
-  if (mindBranch) mindBranch.style.display = 'none';
-
-  // Tailored Micro-Actions based on psychological resistance
-  if (obstacleType === 'overwhelming') {
-    headlineEl.textContent = "Let's make it smaller.";
-    sublineEl.textContent = "That's your only job right now.";
-    taskTextEl.textContent = `Open the ${extractKeyword(taskName)}.`;
-    reassureEl.textContent = "You do not have to write, edit, or finish anything. Just open it.";
-    AppState.unstuck.evenSmallerSteps = [
-      `Just open the ${extractKeyword(taskName)}.`,
-      `Sit down at your desk and open your computer.`,
-      `Put your hand on the mouse or keyboard.`
-    ];
-  } else if (obstacleType === 'dont-know-start') {
-    headlineEl.textContent = "Let's find the first physical action.";
-    sublineEl.textContent = "Inertia breaks when your body moves first.";
-    taskTextEl.textContent = `Open the ${extractKeyword(taskName)}.`;
-    reassureEl.textContent = "Look at the first slide or page. Don't touch the keyboard.";
-    AppState.unstuck.evenSmallerSteps = [
-      `Open the ${extractKeyword(taskName)}.`,
-      `Locate the file and double click it.`,
-      `Just open a blank page.`
-    ];
-  } else if (obstacleType === 'no-energy') {
-    headlineEl.textContent = "Let's make this a low-energy task.";
-    sublineEl.textContent = "No stamina required. Just presence.";
-    taskTextEl.textContent = `Open the ${extractKeyword(taskName)} and just look at the first slide.`;
-    reassureEl.textContent = "No typing, no formatting. Just rest your eyes on it for 30 seconds.";
-    AppState.unstuck.evenSmallerSteps = [
-      `Look at the first slide for 30 seconds.`,
-      `Just take one sip of water and sit comfortably.`,
-      `Rest for 5 minutes without feeling guilty.`
-    ];
-  } else if (obstacleType === 'dont-want-to') {
-    headlineEl.textContent = "That is completely valid.";
-    sublineEl.textContent = "You don't have to feel motivated to take one tiny step.";
-    taskTextEl.textContent = `Set a timer for 2 minutes, or type one single word.`;
-    reassureEl.textContent = "Once 2 minutes are up, you are free to stop if you still want to.";
-    AppState.unstuck.evenSmallerSteps = [
-      `Type one single word.`,
-      `Open the window and leave it open.`,
-      `Put a pencil next to your paper.`
-    ];
-  } else if (obstacleType === 'distracted') {
-    headlineEl.textContent = "Your brain is looking for comfort. That's okay.";
-    sublineEl.textContent = "Let's give you a clean quiet pocket of space.";
-    taskTextEl.textContent = `Take one deep breath. Close every window except the ${extractKeyword(taskName)}.`;
-    reassureEl.textContent = "Just 60 seconds with this single screen.";
-    AppState.unstuck.evenSmallerSteps = [
-      `Close or minimize background tabs.`,
-      `Take three slow deep breaths.`,
-      `Turn your phone face down.`
-    ];
-  } else if (obstacleType === 'something-else') {
-    headlineEl.textContent = "Maybe the task isn't the problem.";
-    sublineEl.textContent = "When another thought is crowding your mind, working is twice as hard.";
-    taskTextEl.textContent = `Put down what's distracting you first.`;
-    reassureEl.textContent = "Write the other thought in your Journal so your brain can let go.";
-    if (standardBranch) standardBranch.style.display = 'none';
-    if (mindBranch) mindBranch.style.display = 'block';
-  }
-
-  showUnstuckPhase(2);
-}
-
-function extractKeyword(task) {
-  if (!task) return 'task';
-  const clean = task.toLowerCase();
-  if (clean.includes('presentation')) return 'presentation';
-  if (clean.includes('portfolio')) return 'portfolio';
-  if (clean.includes('assignment')) return 'assignment';
-  if (clean.includes('email')) return 'inbox';
-  if (clean.includes('bill')) return 'billing page';
-  if (clean.includes('room') || clean.includes('cupboard')) return 'space';
-  return task;
-}
-
-// Setup Unstuck events
-function setupUnstuckEvents() {
-  // Close button
-  document.getElementById('btn-close-unstuck')?.addEventListener('click', closeUnstuckMode);
-
-  // Phase 1: Obstacle buttons
-  document.querySelectorAll('.obstacle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const obstacle = btn.getAttribute('data-obstacle');
-      handleObstacleSelect(obstacle);
-    });
-  });
-
-  // Back to Phase 1
-  document.getElementById('btn-unstuck-back-phase1')?.addEventListener('click', () => {
-    audio.playTap();
-    showUnstuckPhase(1);
-  });
-
-  // Even smaller button
-  document.getElementById('btn-unstuck-even-smaller')?.addEventListener('click', () => {
-    audio.playTap();
-    const steps = AppState.unstuck.evenSmallerSteps;
-    if (steps && steps.length > 0) {
-      AppState.unstuck.stepIndex = (AppState.unstuck.stepIndex + 1) % steps.length;
-      const nextSmallest = steps[AppState.unstuck.stepIndex];
-      const taskTextEl = document.getElementById('tiny-step-task-text');
-      const reassureEl = document.getElementById('tiny-step-task-reassurance');
-      if (taskTextEl) taskTextEl.textContent = nextSmallest;
-      if (reassureEl) reassureEl.textContent = "Ridiculously small. That's the secret to breaking inertia.";
-    }
-  });
-
-  // I did this tiny step (Phase 3 transition)
-  document.getElementById('btn-unstuck-did-step')?.addEventListener('click', () => {
-    audio.playChime();
-    showUnstuckPhase(3);
-  });
-
-  // Branch: Write down in Journal
-  document.getElementById('btn-unstuck-goto-journal')?.addEventListener('click', () => {
-    closeUnstuckMode();
-    navigateToScreen('screen-journal');
-    const jInput = document.getElementById('journal-textarea');
-    if (jInput) {
-      jInput.value = `Right now my head is occupied with: `;
-      jInput.focus();
-    }
-    showCalmToast("Put it down in your private notebook 🌱");
-  });
-
-  document.getElementById('btn-unstuck-mind-back')?.addEventListener('click', () => {
-    audio.playTap();
-    showUnstuckPhase(1);
-  });
-
-  // Phase 3: One more tiny step
-  document.getElementById('btn-unstuck-next-step')?.addEventListener('click', () => {
-    audio.playTap();
-    const taskTextEl = document.getElementById('tiny-step-task-text');
-    const reassureEl = document.getElementById('tiny-step-task-reassurance');
-    if (taskTextEl) taskTextEl.textContent = "Read the first two bullet points.";
-    if (reassureEl) reassureEl.textContent = "Still tiny. No writing yet. Just observe.";
-    showUnstuckPhase(2);
-  });
-
-  // Phase 3: I'm done for now
-  document.getElementById('btn-unstuck-done-now')?.addEventListener('click', () => {
-    audio.playTap();
-    closeUnstuckMode();
-    showCalmToast("You moved. Starting was enough 🌱");
-  });
-
-  // Header & Home buttons launching unstuck
-  document.getElementById('header-unstuck-btn')?.addEventListener('click', () => {
-    launchUnstuckMode('Finish my presentation');
-  });
-  document.getElementById('m-nav-unstuck')?.addEventListener('click', () => {
-    launchUnstuckMode('Finish my presentation');
-  });
-  document.getElementById('home-btn-unstuck')?.addEventListener('click', () => {
-    launchUnstuckMode('Finish my presentation');
-  });
-  document.getElementById('btn-focus-unstuck')?.addEventListener('click', () => {
-    launchUnstuckMode(AppState.homeFocus.title);
-  });
-  document.getElementById('btn-focus-start')?.addEventListener('click', () => {
-    launchUnstuckMode(AppState.homeFocus.title, 'overwhelming');
-  });
-}
-
-// ============================================================================
-// 8. "NOT TODAY" POSTPONING PHILOSOPHY
-// ============================================================================
-// Crucial: "Not today doesn't mean never. Postponing is not failure."
-function handleNotToday(taskTitle, taskId, sourceCategory = 'today') {
-  audio.playTap();
-
-  // If it's the home focus task
-  if (taskTitle === AppState.homeFocus.title) {
-    // Move home focus to Later
-    AppState.things.later.unshift({
-      id: 'postponed_' + Date.now(),
-      title: AppState.homeFocus.title,
-      energy: AppState.homeFocus.energy,
-      step: AppState.homeFocus.step,
-      done: false
-    });
-    AppState.homeFocus.title = 'Reply to Isha';
-    AppState.homeFocus.step = 'Just read her message first.';
-    AppState.homeFocus.energy = 'low';
-    renderHomeScreen();
-    renderThings();
-    showCalmToast("Not today doesn't mean never. Safely moved to Later 🌱");
-    return;
-  }
-
-  // If from "Still on my mind"
-  const mindIndex = AppState.mindItems.findIndex(i => i.id === taskId);
-  if (mindIndex !== -1) {
-    const item = AppState.mindItems.splice(mindIndex, 1)[0];
-    AppState.things.later.unshift({
-      id: 'postponed_' + Date.now(),
-      title: item.title,
-      energy: item.energy,
-      step: item.step,
-      done: false
-    });
-    renderHomeScreen();
-    renderThings();
-    showCalmToast("Not today doesn't mean never. Moved to Later 🌱");
-    return;
-  }
-
-  // If from Things (TODAY or SOON)
-  if (sourceCategory && AppState.things[sourceCategory]) {
-    const idx = AppState.things[sourceCategory].findIndex(t => t.id === taskId);
-    if (idx !== -1) {
-      const movedItem = AppState.things[sourceCategory].splice(idx, 1)[0];
-      AppState.things.later.unshift(movedItem);
-      renderThings();
-      showCalmToast("Not today doesn't mean never. Moved to Later 🌱");
     }
   }
-}
 
-// ============================================================================
-// 9. BRAIN DUMP PARSER (Simulated AI Thought Extraction)
-// ============================================================================
-function setupBrainDump() {
-  const input = document.getElementById('braindump-input');
-  const sampleBtn = document.getElementById('btn-load-sample-dump');
-  const submitBtn = document.getElementById('btn-submit-dump');
-  const clearBtn = document.getElementById('btn-clear-dump');
-  const resultsArea = document.getElementById('braindump-results-area');
-  const parsingState = document.getElementById('dump-parsing-state');
-  const extractedCard = document.getElementById('dump-extracted-card');
-  const itemsContainer = document.getElementById('extracted-items-container');
-  const saveBtn = document.getElementById('btn-save-extracted-items');
-
-  const defaultSample = "I need to finish my assignment and buy shampoo and call the dentist and I forgot to pay the bill and also I need to figure out what I'm doing this weekend...";
-
-  sampleBtn?.addEventListener('click', () => {
-    audio.playTap();
-    if (input) input.value = defaultSample;
-  });
-
-  clearBtn?.addEventListener('click', () => {
-    audio.playTap();
-    if (input) input.value = '';
-    if (resultsArea) resultsArea.style.display = 'none';
-  });
-
-  submitBtn?.addEventListener('click', () => {
-    const text = input?.value.trim();
-    if (!text) {
-      showCalmToast("Type a few thoughts first, or tap 'Try example thoughts' 🌱");
-      return;
-    }
-
-    audio.playTap();
-    if (resultsArea) resultsArea.style.display = 'block';
-    if (parsingState) parsingState.style.display = 'flex';
-    if (extractedCard) extractedCard.style.display = 'none';
-
-    // Simulated parsing delay (gentle unpacking feeling)
-    setTimeout(() => {
-      if (parsingState) parsingState.style.display = 'none';
-      if (extractedCard) extractedCard.style.display = 'block';
-
-      // Parse realistic items from text
-      const extractedList = parseThoughtText(text);
-      renderExtractedItems(extractedList, itemsContainer);
-    }, 700);
-  });
-
-  function parseThoughtText(rawText) {
-    // If user typed custom things or default sample, intelligently extract clauses
-    if (rawText.includes('assignment') || rawText.includes('shampoo')) {
-      return [
-        { text: 'Finish assignment', defaultDest: 'today', energy: 'high' },
-        { text: 'Buy shampoo', defaultDest: 'soon', energy: 'low' },
-        { text: 'Call dentist', defaultDest: 'soon', energy: 'medium' },
-        { text: 'Pay electricity bill', defaultDest: 'today', energy: 'low' },
-        { text: 'Figure out weekend plans', defaultDest: 'later', energy: 'low' }
-      ];
-    }
-
-    // Generic fallback split by 'and', commas, or periods
-    const clauses = rawText.split(/(?:and|also|\.|\n|,)+/i)
-      .map(s => s.trim())
-      .filter(s => s.length > 3)
-      .slice(0, 6);
-
-    return clauses.map((item, idx) => ({
-      text: item.charAt(0).toUpperCase() + item.slice(1),
-      defaultDest: idx === 0 ? 'today' : idx === 1 ? 'soon' : 'later',
-      energy: idx % 2 === 0 ? 'low' : 'medium'
-    }));
+  initEvents() {
+    this.canvas.addEventListener('pointerdown', this.onPointerDown);
+    this.canvas.addEventListener('pointermove', this.onPointerMove);
+    this.canvas.addEventListener('pointerup', this.onPointerUp);
+    this.canvas.addEventListener('pointercancel', this.onPointerUp);
+    window.addEventListener('resize', this.resize);
   }
 
-  function renderExtractedItems(items, container) {
-    if (!container) return;
-    container.innerHTML = items.map((item, index) => `
-      <div class="extracted-row" data-index="${index}" data-text="${escapeHTML(item.text)}" data-energy="${item.energy}">
-        <span class="extracted-item-text">☐ ${escapeHTML(item.text)}</span>
-        <div class="extracted-dest-options" role="radiogroup">
-          <button class="dest-pill ${item.defaultDest === 'today' ? 'active' : ''}" data-dest="today">Today</button>
-          <button class="dest-pill ${item.defaultDest === 'soon' ? 'active' : ''}" data-dest="soon">Soon</button>
-          <button class="dest-pill ${item.defaultDest === 'later' ? 'active' : ''}" data-dest="later">Later</button>
-          <button class="dest-pill ${item.defaultDest === 'remember' ? 'active' : ''}" data-dest="remember">Just remember</button>
-        </div>
-      </div>
-    `).join('');
-
-    // Toggle destination pills
-    container.querySelectorAll('.dest-pill').forEach(pill => {
-      pill.addEventListener('click', (e) => {
-        audio.playTap();
-        const row = e.target.closest('.extracted-row');
-        row.querySelectorAll('.dest-pill').forEach(p => p.classList.remove('active'));
-        e.target.classList.add('active');
-      });
-    });
+  destroy() {
+    if (this.canvas) {
+      this.canvas.removeEventListener('pointerdown', this.onPointerDown);
+      this.canvas.removeEventListener('pointermove', this.onPointerMove);
+      this.canvas.removeEventListener('pointerup', this.onPointerUp);
+      this.canvas.removeEventListener('pointercancel', this.onPointerUp);
+    }
+    window.removeEventListener('resize', this.resize);
+    audio.stopScratchFriction();
   }
 
-  saveBtn?.addEventListener('click', () => {
-    audio.playChime();
-    const rows = itemsContainer?.querySelectorAll('.extracted-row');
-    if (!rows || rows.length === 0) return;
-
-    let savedCount = 0;
-    rows.forEach(row => {
-      const text = row.getAttribute('data-text');
-      const energy = row.getAttribute('data-energy') || 'medium';
-      const activeDest = row.querySelector('.dest-pill.active')?.getAttribute('data-dest') || 'soon';
-
-      if (activeDest === 'remember') {
-        AppState.homeRemember.text = text;
-        AppState.homeRemember.completed = false;
-      } else if (AppState.things[activeDest]) {
-        AppState.things[activeDest].push({
-          id: 'dump_' + Date.now() + Math.random().toString(36).substr(2, 4),
-          title: text,
-          energy: energy,
-          step: `Open or start ${text.toLowerCase()}`,
-          done: false
-        });
-      }
-      savedCount++;
-    });
-
-    renderHomeScreen();
-    renderThings();
-    if (input) input.value = '';
-    if (resultsArea) resultsArea.style.display = 'none';
-
-    showCalmToast(`Unloaded ${savedCount} thoughts into The Spare Room 🌱`);
-    navigateToScreen('screen-things');
-  });
-
-  // Direct home shortcut
-  document.getElementById('home-btn-braindump')?.addEventListener('click', () => {
-    navigateToScreen('screen-braindump');
-  });
-}
-
-// ============================================================================
-// 10. JOURNAL SAVE BEHAVIOR
-// ============================================================================
-function setupJournal() {
-  const saveBtn = document.getElementById('btn-save-journal');
-  const textarea = document.getElementById('journal-textarea');
-  const moodBtns = document.querySelectorAll('.j-mood-btn');
-  let selectedMood = '🫠';
-
-  moodBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      audio.playTap();
-      moodBtns.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selectedMood = btn.getAttribute('data-mood');
-    });
-  });
-
-  saveBtn?.addEventListener('click', () => {
-    const text = textarea?.value.trim();
-    if (!text) {
-      showCalmToast("Write a line or two first 🌱");
-      return;
+  reset() {
+    this.isDrawing = false;
+    this.isCompleted = false;
+    this.coveredMinX = Infinity;
+    this.coveredMaxX = -Infinity;
+    this.points = [];
+    this.allStrokes = [];
+    this.prevMid = null;
+    const dpr = window.devicePixelRatio || 1;
+    const w = this.canvas.width / dpr;
+    const h = this.canvas.height / dpr;
+    this.ctx.clearRect(0, 0, w, h);
+    if (this.slipEl) {
+      this.slipEl.classList.remove('pressing', 'stamped-complete');
     }
+  }
 
-    audio.playChime();
-    const newEntry = {
-      id: 'j_' + Date.now(),
-      date: 'Just now',
-      mood: selectedMood,
-      text: text
+  getCanvasCoords(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
     };
+  }
 
-    AppState.journalEntries.unshift(newEntry);
-    renderJournal();
-    if (textarea) textarea.value = '';
-    showCalmToast("Saved in your private notebook 📖");
-  });
-}
+  onPointerDown(e) {
+    if (this.isCompleted) return;
+    e.preventDefault();
+    window.getSelection()?.removeAllRanges();
 
-// ============================================================================
-// 11. ADD SOMETHING MODAL (Tasks, Reminders, Notes)
-// ============================================================================
-function setupAddModal() {
-  const overlay = document.getElementById('add-modal-overlay');
-  const form = document.getElementById('add-item-form');
-  const closeBtn = document.getElementById('btn-close-add-modal');
-  const cancelBtn = document.getElementById('btn-cancel-add');
-  const typeTabs = document.querySelectorAll('.modal-tab');
+    this.isDrawing = true;
+    try {
+      this.canvas.setPointerCapture(e.pointerId);
+    } catch (err) {}
 
-  const secTask = document.getElementById('form-section-task');
-  const secReminder = document.getElementById('form-section-reminder');
-  const secNote = document.getElementById('form-section-note');
+    audio.init();
+    audio.startScratchFriction();
 
-  let activeType = 'task';
+    if (this.slipEl) {
+      this.slipEl.classList.add('pressing');
+    }
 
-  const openModal = (initialType = 'task') => {
-    audio.playTap();
-    activeType = initialType;
-    typeTabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-type') === initialType));
-    toggleSections(initialType);
-    if (overlay) overlay.classList.add('active');
-    document.getElementById('add-input-title')?.focus();
-  };
+    const { x, y } = this.getCanvasCoords(e);
+    this.lastX = x;
+    this.lastY = y;
+    this.lastTime = Date.now();
 
-  const closeModal = () => {
-    audio.playTap();
-    if (overlay) overlay.classList.remove('active');
-    form?.reset();
-  };
+    const initialWidth = 3.6;
+    const pt = { x, y, width: initialWidth, time: this.lastTime };
+    this.points = [pt];
+    this.currentStroke = [pt];
+    this.allStrokes.push(this.currentStroke);
 
-  function toggleSections(type) {
-    if (secTask) secTask.style.display = type === 'task' ? 'block' : 'none';
-    if (secReminder) secReminder.style.display = type === 'reminder' ? 'block' : 'none';
-    if (secNote) secNote.style.display = type === 'note' ? 'block' : 'none';
+    // Initial authentic pen ink touch dab on paper
+    this.ctx.save();
+    this.ctx.fillStyle = '#9A291A';
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, initialWidth * 0.45, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
 
-    const titleLabel = document.getElementById('add-label-title');
-    if (titleLabel) {
-      if (type === 'task') titleLabel.textContent = "What is the task?";
-      else if (type === 'reminder') titleLabel.textContent = "What would you like a reminder for?";
-      else titleLabel.textContent = "What note would you like to keep?";
+    this.updateCoverage(x, y);
+  }
+
+  onPointerMove(e) {
+    if (!this.isDrawing || this.isCompleted) return;
+    e.preventDefault();
+    window.getSelection()?.removeAllRanges();
+
+    const events = (e.getCoalescedEvents && e.getCoalescedEvents().length > 0)
+      ? e.getCoalescedEvents()
+      : [e];
+
+    for (const evt of events) {
+      const { x, y } = this.getCanvasCoords(evt);
+      const dx = x - this.lastX;
+      const dy = y - this.lastY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 1.0) continue;
+
+      const now = Date.now();
+      const dt = Math.max(1, now - this.lastTime);
+      const speed = dist / dt;
+
+      // Real-time ASMR paper scratch step crunch on movement
+      audio.playPaperScratchStep(speed, dist);
+      audio.updateScratchVelocity(speed);
+
+      // Authentic stationery pen width: 2.8px to 4.0px
+      let width = Math.max(2.8, Math.min(4.0, 3.6 - speed * 0.15));
+      if (evt.pressure && evt.pressure > 0) {
+        width = 2.4 + evt.pressure * 1.8;
+      }
+
+      const curPt = { x, y, width, time: now };
+      this.points.push(curPt);
+      this.currentStroke.push(curPt);
+
+      // Render the papery pen stroke segment
+      this.renderPaperySegment({ x: this.lastX, y: this.lastY }, curPt, speed);
+
+      this.lastX = x;
+      this.lastY = y;
+      this.lastTime = now;
+      this.updateCoverage(x, y);
     }
   }
 
-  typeTabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      e.preventDefault();
-      audio.playTap();
-      activeType = tab.getAttribute('data-type');
-      typeTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      toggleSections(activeType);
-    });
-  });
+  renderPaperySegment(p1, p2, speed) {
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 0.5) return;
 
-  closeBtn?.addEventListener('click', closeModal);
-  cancelBtn?.addEventListener('click', closeModal);
+    // Normal unit vector perpendicular to drag
+    const nx = -dy / dist;
+    const ny = dx / dist;
+    const baseWidth = p2.width;
 
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const title = document.getElementById('add-input-title')?.value.trim();
-    if (!title) return;
+    this.ctx.save();
 
-    audio.playChime();
+    // 1. Organic paper-tooth micro-jitter (natural hand & paper texture friction)
+    const tooth = (Math.random() - 0.5) * 0.75;
+    const midX = (p1.x + p2.x) / 2 + nx * tooth;
+    const midY = (p1.y + p2.y) / 2 + ny * tooth;
 
-    if (activeType === 'task') {
-      const category = document.getElementById('add-select-category')?.value || 'today';
-      const energy = document.getElementById('add-select-energy')?.value || 'medium';
-      const tinystep = document.getElementById('add-input-tinystep')?.value.trim() || `Open or start ${title.toLowerCase()}`;
+    // 2. Primary authentic stationery terracotta ink stroke
+    this.ctx.beginPath();
+    this.ctx.moveTo(p1.x, p1.y);
+    this.ctx.quadraticCurveTo(midX, midY, p2.x, p2.y);
+    this.ctx.strokeStyle = '#9A291A';
+    this.ctx.lineWidth = baseWidth;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.ctx.globalAlpha = 0.88;
+    this.ctx.stroke();
 
-      AppState.things[category].unshift({
-        id: 'task_' + Date.now(),
-        title: title,
-        energy: energy,
-        step: tinystep,
-        done: false
-      });
-      renderThings();
-      showCalmToast(`Added "${title}" to ${category.toUpperCase()} 🌱`);
-    } else if (activeType === 'reminder') {
-      const time = document.getElementById('add-input-rem-time')?.value || '18:00';
-      AppState.homeReminder.title = `${title} · ${time}`;
-      AppState.homeReminder.completed = false;
-      renderHomeScreen();
-      showCalmToast(`Reminder set for ${time} ⏰`);
-    } else if (activeType === 'note') {
-      const placement = document.getElementById('add-note-placement')?.value || 'home';
-      if (placement === 'home') {
-        AppState.homeRemember.text = title;
-        AppState.homeRemember.completed = false;
-        renderHomeScreen();
-      } else {
-        // Today in calendar
-        AppState.calendar[1].items.push({
-          type: 'note',
-          noteText: title
-        });
-        renderCalendar();
+    // 3. Concentrated inner rollerball/ballpoint core filament
+    this.ctx.beginPath();
+    this.ctx.moveTo(p1.x + nx * 0.35, p1.y + ny * 0.35);
+    this.ctx.lineTo(p2.x + nx * 0.3, p2.y + ny * 0.3);
+    this.ctx.strokeStyle = '#6B1B10';
+    this.ctx.lineWidth = Math.max(1.0, baseWidth * 0.42);
+    this.ctx.globalAlpha = 0.72;
+    this.ctx.stroke();
+
+    // 4. Subtle paper-tooth fiber edge grain
+    this.ctx.beginPath();
+    const edgeOffset = (Math.random() > 0.5 ? 1 : -1) * (baseWidth * 0.4);
+    this.ctx.moveTo(p1.x + nx * edgeOffset, p1.y + ny * edgeOffset);
+    this.ctx.lineTo(p2.x + nx * (edgeOffset * 0.85), p2.y + ny * (edgeOffset * 0.85));
+    this.ctx.strokeStyle = '#BA412C';
+    this.ctx.lineWidth = Math.max(0.7, baseWidth * 0.28);
+    this.ctx.globalAlpha = 0.38;
+    this.ctx.stroke();
+
+    // 5. Paper fiber dry flecks & tooth stipples
+    if (dist > 3 && Math.random() < 0.35) {
+      const fleckOffset = (Math.random() - 0.5) * baseWidth * 1.1;
+      const fX = midX + nx * fleckOffset;
+      const fY = midY + ny * fleckOffset;
+      this.ctx.beginPath();
+      this.ctx.arc(fX, fY, 0.35 + Math.random() * 0.45, 0, Math.PI * 2);
+      this.ctx.fillStyle = '#6B1B10';
+      this.ctx.globalAlpha = 0.55;
+      this.ctx.fill();
+    }
+
+    this.ctx.restore();
+  }
+
+  onPointerUp(e) {
+    if (!this.isDrawing) return;
+    this.isDrawing = false;
+    audio.stopScratchFriction();
+    this.prevMid = null;
+
+    if (this.slipEl) {
+      this.slipEl.classList.remove('pressing');
+    }
+
+    try {
+      this.canvas.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+  }
+
+  updateCoverage(x, y) {
+    if (this.isCompleted || !this.textEl) return;
+    const textRect = this.textEl.getBoundingClientRect();
+    const canvasRect = this.canvas.getBoundingClientRect();
+
+    const textTop = textRect.top - canvasRect.top;
+    const textBottom = textRect.bottom - canvasRect.top;
+
+    // Forgiving vertical range (+/- 45px)
+    if (y >= textTop - 45 && y <= textBottom + 45) {
+      this.coveredMinX = Math.min(this.coveredMinX, x);
+      this.coveredMaxX = Math.max(this.coveredMaxX, x);
+
+      const textLeft = textRect.left - canvasRect.left;
+      const textRight = textRect.right - canvasRect.left;
+      const textWidth = Math.max(textRect.width, 1);
+
+      const strokeOverlapLeft = Math.max(this.coveredMinX, textLeft);
+      const strokeOverlapRight = Math.min(this.coveredMaxX, textRight);
+      const coveredWidth = Math.max(0, strokeOverlapRight - strokeOverlapLeft);
+      const ratio = coveredWidth / textWidth;
+
+      if (this.onProgress) {
+        this.onProgress(ratio);
       }
-      showCalmToast("Note pinned to your space 📌");
+
+      // Dopamine threshold: 42% crossing!
+      if (ratio >= 0.42 && !this.isCompleted) {
+        this.isCompleted = true;
+        audio.stopScratchFriction();
+        audio.playStampThud();
+        audio.playDopamineChime();
+
+        if (this.slipEl) {
+          this.slipEl.classList.remove('pressing');
+          this.slipEl.classList.add('stamped-complete');
+        }
+
+        this.onComplete();
+      }
     }
-
-    closeModal();
-  });
-
-  // Triggers for opening Add Modal
-  document.getElementById('home-btn-add')?.addEventListener('click', () => openModal('task'));
-  document.getElementById('btn-things-add-modal')?.addEventListener('click', () => openModal('task'));
-  document.getElementById('cal-btn-add')?.addEventListener('click', () => openModal('reminder'));
-  document.getElementById('btn-mind-add')?.addEventListener('click', () => openModal('task'));
+  }
 }
 
 // ============================================================================
-// 12. QUICK SCHEDULE MODAL
+// 4. INITIALIZATION
 // ============================================================================
-function setupScheduleModal() {
-  const overlay = document.getElementById('schedule-modal-overlay');
-  const titleEl = document.getElementById('schedule-item-title');
-  const confirmBtn = document.getElementById('btn-confirm-schedule');
-  const cancelBtn = document.getElementById('btn-cancel-schedule');
-  const closeBtn = document.getElementById('btn-close-schedule-modal');
-  const selectEl = document.getElementById('schedule-date-select');
+document.addEventListener('DOMContentLoaded', () => {
+  renderMainHero();
+  renderProjectFilterPills();
+  renderCalendarDesk();
+  initProgressiveDrawer();
+  initFocusTimerFlow();
+  initLivingWorldScreen();
+  initMiniPlayTools();
+  initAITaskEntryModal();
+  initBreakSystem();
+  initAmbientSoundToggle();
+});
 
-  let currentScheduleTitle = '';
+function getActiveProject() {
+  return AppState.projects.find(p => p.id === AppState.activeProjectId) || AppState.projects[0];
+}
 
-  window.openScheduleModal = (title) => {
-    audio.playTap();
-    currentScheduleTitle = title;
-    if (titleEl) titleEl.textContent = `Schedule: "${title}"`;
-    if (overlay) overlay.classList.add('active');
-  };
+// ============================================================================
+// 5. MAIN HERO: "Just this." & TACTILE PAPER SLIP
+// ============================================================================
+let heroScratcher = null;
 
-  const closeScheduleModal = () => {
-    audio.playTap();
-    if (overlay) overlay.classList.remove('active');
-  };
+function renderMainHero() {
+  const project = getActiveProject();
+  const todaySession = project.sessions.find(s => s.isToday && !s.completed)
+                    || project.sessions.find(s => !s.completed);
 
-  closeBtn?.addEventListener('click', closeScheduleModal);
-  cancelBtn?.addEventListener('click', closeScheduleModal);
+  const projLabel = document.getElementById('hero-project-label');
+  if (projLabel) projLabel.textContent = project.title.toUpperCase();
 
-  confirmBtn?.addEventListener('click', () => {
-    audio.playChime();
-    const dateVal = selectEl?.value;
-    const targetDay = AppState.calendar.find(d => d.dateKey === dateVal);
+  const taskTitle = document.getElementById('hero-task-title');
+  const scratchBox = document.getElementById('hero-scratch-box');
+  const durationLabel = document.getElementById('hero-duration-label');
+  const startBtn = document.getElementById('btn-start-hero');
 
-    if (targetDay) {
-      targetDay.items.push({
-        type: 'task',
-        title: currentScheduleTitle,
-        energy: 'medium'
-      });
-      renderCalendar();
-      showCalmToast(`Placed on ${targetDay.dayName} ${targetDay.dayNum} in Calendar 📅`);
+  if (todaySession) {
+    if (taskTitle) {
+      taskTitle.textContent = todaySession.title;
+      taskTitle.classList.remove('is-scratched');
     }
-    closeScheduleModal();
+    if (scratchBox) {
+      scratchBox.textContent = '□';
+      scratchBox.classList.remove('completed');
+    }
+    if (durationLabel) {
+      durationLabel.textContent = `${todaySession.durationMin} minutes`;
+    }
+    if (startBtn) {
+      startBtn.style.opacity = '1';
+      startBtn.style.pointerEvents = 'auto';
+      startBtn.onclick = () => {
+        launchFocusMode(todaySession);
+        audio.playTap(520);
+      };
+    }
+    initHeroFreehandScratch(todaySession, project);
+  } else {
+    // All sessions complete for today
+    if (taskTitle) {
+      taskTitle.textContent = 'All sessions complete for today ✨';
+      taskTitle.classList.remove('is-scratched');
+    }
+    if (scratchBox) {
+      scratchBox.textContent = '✓';
+      scratchBox.classList.add('completed');
+    }
+    if (durationLabel) {
+      durationLabel.textContent = 'Rest & celebrate your world 🌿';
+    }
+    if (startBtn) {
+      startBtn.style.opacity = '0.5';
+      startBtn.style.pointerEvents = 'none';
+      startBtn.onclick = null;
+    }
+    initHeroFreehandScratch(null, project);
+  }
+
+  // Update top bar diorama count
+  const dioramaCount = document.getElementById('diorama-piece-count');
+  if (dioramaCount) {
+    dioramaCount.textContent = `${AppState.world.placedEntities.length} pieces grown →`;
+  }
+
+  renderCompletedShelf();
+}
+
+function initHeroFreehandScratch(session, project) {
+  const canvas = document.getElementById('hero-freehand-canvas');
+  const taskTitle = document.getElementById('hero-task-title');
+  const scratchBox = document.getElementById('hero-scratch-box');
+  const scratchCue = document.getElementById('hero-scratch-cue');
+  if (!canvas || !taskTitle) return;
+
+  if (heroScratcher) {
+    heroScratcher.destroy();
+    heroScratcher = null;
+  }
+
+  if (!session || session.completed) {
+    canvas.style.display = 'none';
+    if (scratchCue) scratchCue.style.display = 'none';
+    return;
+  }
+
+  canvas.style.display = 'block';
+  if (scratchCue) {
+    scratchCue.style.display = 'inline-block';
+    scratchCue.textContent = 'drag across to scratch off ✏️';
+    scratchCue.style.opacity = '0.8';
+  }
+
+  // Allow DOM to layout before canvas sizing
+  requestAnimationFrame(() => {
+    heroScratcher = new FreehandScratcher({
+      canvas: canvas,
+      textElement: taskTitle,
+      slipElement: document.getElementById('hero-task-slip'),
+      onProgress: (ratio) => {
+        if (ratio > 0.08 && scratchCue) {
+          scratchCue.style.opacity = '0.5';
+        }
+      },
+      onComplete: () => {
+        // 1. Recognition
+        if (scratchBox) {
+          scratchBox.textContent = '✓';
+          scratchBox.classList.add('completed');
+        }
+        if (taskTitle) {
+          taskTitle.classList.add('is-scratched');
+        }
+        if (scratchCue) {
+          scratchCue.textContent = '✓ DONE';
+          scratchCue.style.opacity = '1';
+        }
+
+        session.completed = true;
+
+        // 2. Hold crossed-out task visible for ~1 second (1000ms)
+        setTimeout(() => {
+          const slipEl = document.getElementById('hero-task-slip');
+          if (slipEl) {
+            const slipRect = slipEl.getBoundingClientRect();
+            flySeedsToWorld(slipRect.left + 100, slipRect.top + 40);
+          }
+
+          AppState.completedSlips.unshift({
+            title: session.title,
+            projectTitle: project.title,
+            durationMin: session.durationMin,
+            completedAt: 'Just now'
+          });
+
+          renderCompletedShelf();
+          renderCalendarDesk();
+          renderMainHero();
+          if (AppState.isDrawerOpen) renderDrawerContent();
+        }, 1000);
+      }
+    });
+  });
+}
+
+// Render Completed Shelf
+function renderCompletedShelf() {
+  const tray = document.getElementById('completed-today-tray');
+  const rack = document.getElementById('scratched-slips-rack');
+  if (!tray || !rack) return;
+
+  if (AppState.completedSlips.length === 0) {
+    tray.style.display = 'none';
+    return;
+  }
+
+  tray.style.display = 'block';
+  rack.innerHTML = '';
+
+  AppState.completedSlips.forEach(slip => {
+    const item = document.createElement('div');
+    item.className = 'scratched-slip-item';
+    item.innerHTML = `
+      <span class="scratched-slip-text">${slip.title}</span>
+      <span class="scratched-slip-tag">${slip.durationMin}m session complete ✓</span>
+    `;
+    rack.appendChild(item);
   });
 }
 
 // ============================================================================
-// 13. GLOBAL EVENT DELEGATION & INTERACTIONS
+// 5. FLYING PIECES (SEEDS TRAVEL TO WORLD ANCHOR)
 // ============================================================================
-function setupGlobalInteractions() {
-  // Navigation tabs (desktop)
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-target');
-      navigateToScreen(target);
+function flySeedsToWorld(startX, startY) {
+  const worldWidget = document.getElementById('btn-open-world');
+  if (!worldWidget) return;
+  const targetRect = worldWidget.getBoundingClientRect();
+  const endX = targetRect.left + targetRect.width / 2;
+  const endY = targetRect.top + targetRect.height / 2;
+
+  const icons = ['🌱', '🌸', '✨'];
+  icons.forEach((icon, idx) => {
+    const seed = document.createElement('div');
+    seed.className = 'floating-world-seed';
+    seed.textContent = icon;
+    seed.style.left = `${startX + idx * 24}px`;
+    seed.style.top = `${startY}px`;
+    seed.style.opacity = '1';
+    seed.style.transform = 'scale(0.8)';
+    document.body.appendChild(seed);
+
+    setTimeout(() => {
+      seed.style.left = `${endX}px`;
+      seed.style.top = `${endY}px`;
+      seed.style.transform = 'scale(1.4) rotate(20deg)';
+      seed.style.opacity = '0.9';
+    }, 50 + idx * 80);
+
+    setTimeout(() => {
+      seed.remove();
+      if (idx === icons.length - 1) {
+        // World anchor receives it
+        worldWidget.classList.add('receiving-sparkle');
+        audio.playChime();
+        setTimeout(() => worldWidget.classList.remove('receiving-sparkle'), 650);
+
+        // Add a new entity to world
+        growWorldFromSession();
+      }
+    }, 950 + idx * 80);
+  });
+}
+
+function growWorldFromSession() {
+  const newOptions = [
+    { icon: '🌸', label: 'Wildflower Patch' },
+    { icon: '🌳', label: 'Sapling Oak' },
+    { icon: '🪨', label: 'River Stone' },
+    { icon: '🍄', label: 'Forest Mushroom' },
+    { icon: '🦆', label: 'Pond Duck' }
+  ];
+  const chosen = newOptions[Math.floor(Math.random() * newOptions.length)];
+
+  const x = Math.floor(30 + Math.random() * 40);
+  const y = Math.floor(45 + Math.random() * 25);
+
+  AppState.world.placedEntities.push({
+    id: `e-${Date.now()}`,
+    icon: chosen.icon,
+    label: chosen.label,
+    x, y
+  });
+
+  const dioramaCount = document.getElementById('diorama-piece-count');
+  if (dioramaCount) {
+    dioramaCount.textContent = `${AppState.world.placedEntities.length} pieces grown →`;
+  }
+}
+
+// ============================================================================
+// 6. PROGRESSIVE DISCLOSURE: PROJECT DETAILS DRAWER
+// ============================================================================
+function initProgressiveDrawer() {
+  const revealBtn = document.getElementById('btn-reveal-project');
+  const drawer = document.getElementById('project-drawer');
+  const closeBtn = document.getElementById('btn-close-drawer');
+
+  if (revealBtn && drawer) {
+    revealBtn.addEventListener('click', () => {
+      AppState.isDrawerOpen = !AppState.isDrawerOpen;
+      drawer.style.display = AppState.isDrawerOpen ? 'block' : 'none';
+      if (AppState.isDrawerOpen) renderDrawerContent();
+      audio.playTap(480);
     });
-  });
+  }
 
-  // Mobile bottom nav items
-  document.querySelectorAll('.m-nav-item:not(.m-unstuck-btn)').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.getAttribute('data-target');
-      navigateToScreen(target);
+  if (closeBtn && drawer) {
+    closeBtn.addEventListener('click', () => {
+      AppState.isDrawerOpen = false;
+      drawer.style.display = 'none';
+      audio.playTap(440);
     });
+  }
+}
+
+function renderDrawerContent() {
+  const project = getActiveProject();
+  if (!project) return;
+
+  const titleEl = document.getElementById('drawer-project-title');
+  if (titleEl) titleEl.textContent = project.title.toUpperCase();
+
+  const metaEl = document.getElementById('drawer-project-meta-text');
+  if (metaEl) metaEl.textContent = `Estimated: ${project.totalSessions} × 30 min · Due ${project.deadlineText}`;
+
+  const deadlineLabel = document.getElementById('drawer-deadline-label');
+  if (deadlineLabel) deadlineLabel.textContent = project.deadlineText.toUpperCase();
+
+  const remaining = project.sessions.filter(s => !s.completed).length;
+  const remEl = document.getElementById('drawer-remaining-sessions');
+  if (remEl) remEl.textContent = `${remaining} sessions left`;
+
+  const trackBar = document.getElementById('drawer-track-bar');
+  if (!trackBar) return;
+  trackBar.innerHTML = '<div class="drawer-rail"></div>';
+
+  project.sessions.forEach((sess, idx) => {
+    const node = document.createElement('div');
+    node.className = 'drawer-node';
+    node.title = `${sess.durationMin}m · ${sess.title}`;
+
+    const circle = document.createElement('div');
+    circle.className = `drawer-dot-circle ${sess.completed ? 'completed' : ''}`;
+    circle.innerHTML = sess.completed ? '✓' : (idx + 1);
+
+    node.appendChild(circle);
+    node.addEventListener('click', () => {
+      launchFocusMode(sess);
+      audio.playTap(520);
+    });
+    trackBar.appendChild(node);
   });
 
-  // Brand link goes to home
-  document.getElementById('brand-home-link')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    navigateToScreen('screen-home');
-  });
+  const dlNode = document.createElement('div');
+  dlNode.className = 'drawer-node';
+  const diamond = document.createElement('div');
+  diamond.className = 'drawer-diamond';
+  diamond.innerHTML = '◆';
+  dlNode.appendChild(diamond);
+  trackBar.appendChild(dlNode);
+}
 
-  // Audio toggles in top bar
-  const soundBtn = document.getElementById('sound-effects-toggle');
-  soundBtn?.addEventListener('click', () => {
-    audio.soundEffectsEnabled = !audio.soundEffectsEnabled;
-    const icon = document.getElementById('sound-icon');
-    if (icon) icon.textContent = audio.soundEffectsEnabled ? '🔔' : '🔕';
-    showCalmToast(audio.soundEffectsEnabled ? 'Interaction sounds enabled' : 'Muted');
-  });
+// ============================================================================
+// 7. THE CALENDAR DESK (WITH ACCUMULATED SCRATCHES)
+// ============================================================================
+function renderProjectFilterPills() {
+  const container = document.getElementById('quiet-project-filter');
+  if (!container) return;
+  container.innerHTML = '';
 
-  const ambientBtn = document.getElementById('ambient-sound-toggle');
-  ambientBtn?.addEventListener('click', () => {
-    const isPlaying = audio.toggleAmbient(!audio.ambientPlaying);
-    ambientBtn.classList.toggle('active', isPlaying);
-    showCalmToast(isPlaying ? 'Gentle rain ambience playing 🌧️' : 'Ambience paused');
-  });
-
-  // Energy Filter buttons in Things screen
-  document.querySelectorAll('.filter-pill').forEach(pill => {
+  AppState.projects.forEach(proj => {
+    const pill = document.createElement('button');
+    pill.className = `filter-pill ${proj.id === AppState.activeProjectId ? 'active' : ''}`;
+    pill.textContent = proj.title;
     pill.addEventListener('click', () => {
-      audio.playTap();
-      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      AppState.energyFilter = pill.getAttribute('data-energy');
-      renderThings();
+      AppState.activeProjectId = proj.id;
+      renderProjectFilterPills();
+      renderMainHero();
+      renderCalendarDesk();
+      if (AppState.isDrawerOpen) renderDrawerContent();
+      audio.playTap(460);
+    });
+    container.appendChild(pill);
+  });
+}
+
+function renderCalendarDesk() {
+  const board = document.getElementById('calendar-wall-desk');
+  if (!board) return;
+  board.innerHTML = '';
+
+  const activeProj = getActiveProject();
+
+  AppState.days.forEach(day => {
+    const col = document.createElement('div');
+    col.className = `desk-col ${day.isToday ? 'is-today' : ''}`;
+    col.dataset.day = day.dayCode;
+
+    // Drag-and-drop
+    col.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
+
+    col.addEventListener('dragleave', () => {
+      col.classList.remove('drag-over');
+    });
+
+    col.addEventListener('drop', (e) => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      const sessionId = e.dataTransfer.getData('text/plain');
+      if (sessionId) {
+        moveSessionToDay(sessionId, day.dayCode);
+        audio.playTap(440);
+      }
+    });
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'col-header';
+    header.innerHTML = `
+      <span class="col-day-name">${day.dayCode}</span>
+      <span class="col-date-num">${day.dateNumber}</span>
+    `;
+    col.appendChild(header);
+
+    // Sessions space
+    const space = document.createElement('div');
+    space.className = 'col-sessions-space';
+
+    AppState.projects.forEach(proj => {
+      const isCur = proj.id === activeProj.id;
+      const daySessions = proj.sessions.filter(s => s.day === day.dayCode);
+
+      daySessions.forEach(sess => {
+        const pill = document.createElement('div');
+        pill.className = `work-piece-pill ${sess.completed ? 'completed' : ''} ${!isCur ? 'other-proj' : ''}`;
+        pill.draggable = true;
+        pill.title = `${sess.durationMin}m · ${sess.title} (${proj.title})`;
+
+        pill.innerHTML = `
+          <div class="piece-dot ${sess.completed ? 'scratched' : ''}">${sess.completed ? '✓' : '●'}</div>
+          <span class="piece-title-text">${sess.title}</span>
+        `;
+
+        pill.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('text/plain', sess.id);
+          pill.classList.add('dragging');
+        });
+
+        pill.addEventListener('dragend', () => {
+          pill.classList.remove('dragging');
+        });
+
+        pill.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showPiecePopover(sess, proj, pill);
+          audio.playTap(480);
+        });
+
+        space.appendChild(pill);
+      });
+    });
+
+    if (activeProj && activeProj.deadlineDay === day.dayCode) {
+      const dl = document.createElement('div');
+      dl.className = 'col-deadline-badge';
+      dl.innerHTML = `<span class="diamond">◆</span> <span>Due ${activeProj.deadlineText}</span>`;
+      space.appendChild(dl);
+    }
+
+    col.appendChild(space);
+    board.appendChild(col);
+  });
+}
+
+function moveSessionToDay(sessionId, targetDay) {
+  for (const proj of AppState.projects) {
+    const found = proj.sessions.find(s => s.id === sessionId);
+    if (found) {
+      found.day = targetDay;
+      found.isToday = (targetDay === 'MON');
+      break;
+    }
+  }
+  renderCalendarDesk();
+  renderMainHero();
+  if (AppState.isDrawerOpen) renderDrawerContent();
+}
+
+function showPiecePopover(session, project, anchorElement) {
+  const popover = document.getElementById('piece-popover');
+  if (!popover) return;
+
+  const durEl = document.getElementById('popover-duration');
+  const taskEl = document.getElementById('popover-task');
+  const projEl = document.getElementById('popover-project');
+  const btnGo = document.getElementById('btn-popover-go');
+  const btnScratch = document.getElementById('btn-popover-scratch');
+  const btnHide = document.getElementById('btn-popover-hide');
+
+  if (durEl) durEl.textContent = `${session.durationMin} MINUTE SESSION`;
+  if (taskEl) taskEl.textContent = session.title;
+  if (projEl) projEl.textContent = project.title;
+
+  const rect = anchorElement.getBoundingClientRect();
+  popover.style.display = 'block';
+  popover.style.top = `${rect.bottom + window.scrollY + 8}px`;
+  popover.style.left = `${Math.min(window.innerWidth - 260, Math.max(10, rect.left + window.scrollX - 20))}px`;
+
+  btnGo.onclick = () => {
+    popover.style.display = 'none';
+    launchFocusMode(session);
+    audio.playTap(520);
+  };
+
+  btnScratch.onclick = () => {
+    popover.style.display = 'none';
+    triggerScratchSequenceModal(session, project);
+  };
+
+  btnHide.onclick = () => {
+    popover.style.display = 'none';
+  };
+}
+
+document.addEventListener('click', (e) => {
+  const popover = document.getElementById('piece-popover');
+  if (popover && !popover.contains(e.target) && !e.target.closest('.work-piece-pill')) {
+    popover.style.display = 'none';
+  }
+});
+
+// ============================================================================
+// 8. FOCUS TIMER MODE & SIGNATURE SCRATCH OVERLAY SEQUENCE
+// ============================================================================
+function launchFocusMode(session) {
+  AppState.focusTimer.activeSessionId = session.id;
+  AppState.focusTimer.durationMins = session.durationMin || 30;
+  AppState.focusTimer.totalSeconds = AppState.focusTimer.durationMins * 60;
+  AppState.focusTimer.remainingSeconds = AppState.focusTimer.totalSeconds;
+
+  const clockTitle = document.getElementById('focus-clock-task-name');
+  if (clockTitle) clockTitle.textContent = session.title;
+
+  updateClockDisplay();
+  startFocusClock();
+
+  const screen = document.getElementById('focus-timer-screen');
+  if (screen) screen.style.display = 'flex';
+}
+
+function initFocusTimerFlow() {
+  const btnExit = document.getElementById('btn-exit-focus');
+  if (btnExit) {
+    btnExit.addEventListener('click', () => {
+      closeFocusMode();
+      audio.playTap(440);
+    });
+  }
+
+  const btnToggle = document.getElementById('btn-clock-toggle');
+  if (btnToggle) {
+    btnToggle.addEventListener('click', () => {
+      toggleClock();
+      audio.playTap(450);
+    });
+  }
+
+  // "Scratch it off & finish ✏️"
+  const btnComplete = document.getElementById('btn-clock-complete');
+  if (btnComplete) {
+    btnComplete.addEventListener('click', () => {
+      closeFocusMode();
+      triggerScratchSequenceModal();
+    });
+  }
+
+  const btnBreak = document.getElementById('btn-clock-break');
+  if (btnBreak) {
+    btnBreak.addEventListener('click', () => {
+      openBreakPrompt();
+      audio.playTap(460);
+    });
+  }
+}
+
+function startFocusClock() {
+  if (AppState.focusTimer.intervalId) clearInterval(AppState.focusTimer.intervalId);
+  AppState.focusTimer.isRunning = true;
+  updateClockControls();
+
+  AppState.focusTimer.intervalId = setInterval(() => {
+    if (AppState.focusTimer.remainingSeconds > 0) {
+      AppState.focusTimer.remainingSeconds--;
+      updateClockDisplay();
+    } else {
+      clearInterval(AppState.focusTimer.intervalId);
+      closeFocusMode();
+      triggerScratchSequenceModal();
+    }
+  }, 1000);
+}
+
+function toggleClock() {
+  if (AppState.focusTimer.isRunning) {
+    clearInterval(AppState.focusTimer.intervalId);
+    AppState.focusTimer.isRunning = false;
+  } else {
+    startFocusClock();
+  }
+  updateClockControls();
+}
+
+function updateClockControls() {
+  const icon = document.getElementById('clock-toggle-icon');
+  const text = document.getElementById('clock-toggle-text');
+  if (icon && text) {
+    icon.textContent = AppState.focusTimer.isRunning ? '⏸️' : '▶️';
+    text.textContent = AppState.focusTimer.isRunning ? 'Pause' : 'Resume';
+  }
+}
+
+function updateClockDisplay() {
+  const numEl = document.getElementById('focus-clock-number');
+  const fillEl = document.getElementById('focus-progress-fill');
+  const secs = AppState.focusTimer.remainingSeconds;
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  const str = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+  if (numEl) numEl.textContent = str;
+
+  if (fillEl && AppState.focusTimer.totalSeconds > 0) {
+    const elapsed = AppState.focusTimer.totalSeconds - secs;
+    const pct = Math.min(100, (elapsed / AppState.focusTimer.totalSeconds) * 100);
+    fillEl.style.width = `${pct}%`;
+  }
+}
+
+function closeFocusMode() {
+  if (AppState.focusTimer.intervalId) clearInterval(AppState.focusTimer.intervalId);
+  AppState.focusTimer.isRunning = false;
+  const screen = document.getElementById('focus-timer-screen');
+  if (screen) screen.style.display = 'none';
+}
+
+// Sequence Modal: User-Controlled Interactive Scratch Gesture
+let modalScratcher = null;
+
+function triggerScratchSequenceModal(targetSession = null, targetProject = null) {
+  const modal = document.getElementById('scratch-moment-overlay');
+  const project = targetProject || getActiveProject();
+  const session = targetSession
+               || project.sessions.find(s => s.id === AppState.focusTimer.activeSessionId)
+               || project.sessions.find(s => s.isToday && !s.completed)
+               || project.sessions.find(s => !s.completed)
+               || project.sessions[0];
+
+  const slipBox = document.getElementById('seq-slip-box');
+  const slipProj = document.getElementById('seq-slip-project');
+  const slipTitle = document.getElementById('seq-slip-title');
+  const doneTag = document.getElementById('seq-done-tag');
+  const guidanceCue = document.getElementById('scratch-guidance-cue');
+  const piecesContainer = document.getElementById('seq-emerging-pieces');
+  const actionsRow = document.getElementById('seq-actions-row');
+  const canvas = document.getElementById('modal-freehand-canvas');
+
+  // Reset modal state: Clean paper slip waiting for USER to scratch
+  if (slipBox) {
+    slipBox.textContent = '□';
+    slipBox.classList.remove('checked');
+  }
+  if (slipProj) slipProj.textContent = project.title.toUpperCase();
+  if (slipTitle) {
+    slipTitle.textContent = session.title;
+    slipTitle.classList.remove('crossed-out');
+  }
+  if (doneTag) doneTag.style.display = 'none';
+  if (guidanceCue) {
+    guidanceCue.style.opacity = '1';
+    guidanceCue.style.display = 'flex';
+  }
+  if (piecesContainer) piecesContainer.innerHTML = '';
+  if (actionsRow) actionsRow.style.display = 'none';
+
+  modal.style.display = 'flex';
+
+  requestAnimationFrame(() => {
+    if (modalScratcher) {
+      modalScratcher.destroy();
+      modalScratcher = null;
+    }
+
+    modalScratcher = new FreehandScratcher({
+      canvas: canvas,
+      textElement: slipTitle,
+      slipElement: document.getElementById('sequence-slip'),
+      onProgress: (ratio) => {
+        if (ratio > 0.08 && guidanceCue) {
+          guidanceCue.style.opacity = '0.5';
+        }
+      },
+      onComplete: () => {
+        // 1. Recognize the task as scratched off
+        if (slipBox) {
+          slipBox.textContent = '✓';
+          slipBox.classList.add('checked');
+        }
+        if (doneTag) {
+          doneTag.style.display = 'inline-block';
+        }
+        if (slipTitle) {
+          slipTitle.classList.add('crossed-out');
+        }
+        if (guidanceCue) {
+          guidanceCue.style.opacity = '0';
+        }
+
+        session.completed = true;
+
+        // 2. Hold crossed-out task visible for ~1 second (1000ms)
+        setTimeout(() => {
+          // 3. Emerging world pieces appear & unlock
+          if (piecesContainer) {
+            piecesContainer.innerHTML = '<span>🌱</span> <span>🌸</span> <span>🪨</span>';
+          }
+
+          // 4. Flying seeds float to the world anchor
+          const cardRect = document.getElementById('scratch-sequence-card').getBoundingClientRect();
+          flySeedsToWorld(cardRect.left + cardRect.width / 2 - 20, cardRect.top + 140);
+
+          // 5. Update state
+          AppState.completedSlips.unshift({
+            title: session.title,
+            projectTitle: project.title,
+            durationMin: session.durationMin,
+            completedAt: 'Just now'
+          });
+
+          renderCompletedShelf();
+          renderCalendarDesk();
+          renderMainHero();
+          if (AppState.isDrawerOpen) renderDrawerContent();
+
+          // 6. Reveal Post-Scratch Options
+          if (actionsRow) {
+            actionsRow.style.display = 'flex';
+          }
+
+          // Gentle auto-slide back to desk if left untouched
+          const autoCloseTimeout = setTimeout(() => {
+            if (modal.style.display === 'flex') {
+              modal.style.display = 'none';
+            }
+          }, 3200);
+
+          const btnWorld = document.getElementById('btn-seq-open-world');
+          const btnDesk = document.getElementById('btn-seq-back-desk');
+          if (btnWorld) {
+            btnWorld.onclick = () => {
+              clearTimeout(autoCloseTimeout);
+              modal.style.display = 'none';
+              openLivingWorld();
+              audio.playTap(520);
+            };
+          }
+          if (btnDesk) {
+            btnDesk.onclick = () => {
+              clearTimeout(autoCloseTimeout);
+              modal.style.display = 'none';
+              audio.playTap(440);
+            };
+          }
+        }, 1000);
+      }
+    });
+  });
+}
+
+// ============================================================================
+// 9. THE LIVING WORLD & BOUNDED PLAY SPACE
+// ============================================================================
+function initLivingWorldScreen() {
+  const btnOpen = document.getElementById('btn-open-world');
+  const btnBack = document.getElementById('btn-back-to-desk');
+  const screen = document.getElementById('world-play-screen');
+
+  if (btnOpen) {
+    btnOpen.addEventListener('click', () => {
+      openLivingWorld();
+      audio.playTap(500);
+    });
+  }
+
+  if (btnBack && screen) {
+    btnBack.addEventListener('click', () => {
+      screen.style.display = 'none';
+      audio.playTap(440);
+    });
+  }
+
+  const btnBrandHome = document.getElementById('btn-brand-home');
+  if (btnBrandHome && screen) {
+    btnBrandHome.addEventListener('click', () => {
+      screen.style.display = 'none';
+      audio.playTap(440);
+    });
+  }
+
+  // Play sub-tabs
+  const tabs = document.querySelectorAll('.play-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const sub = tab.dataset.sub;
+      document.querySelectorAll('.play-pane').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(`pane-${sub}`);
+      if (target) target.classList.add('active');
+      audio.playTap(460);
     });
   });
 
-  // Focus Task Card actions
-  document.getElementById('btn-focus-done')?.addEventListener('click', () => {
-    audio.playChime();
-    AppState.homeFocus.completed = !AppState.homeFocus.completed;
-    renderHomeScreen();
-    showCalmToast(AppState.homeFocus.completed ? "Done! One step at a time 🌱" : "Marked active");
-  });
-
-  document.getElementById('btn-focus-nottoday')?.addEventListener('click', () => {
-    handleNotToday(AppState.homeFocus.title, 'focus-task');
-  });
-
-  // Reminder done
-  document.getElementById('btn-reminder-done')?.addEventListener('click', () => {
-    audio.playChime();
-    AppState.homeReminder.completed = true;
-    renderHomeScreen();
-    showCalmToast("Reminder completed ✓");
-  });
-
-  // Remember note done
-  document.getElementById('btn-remember-done')?.addEventListener('click', () => {
-    audio.playChime();
-    AppState.homeRemember.completed = true;
-    renderHomeScreen();
-    showCalmToast("Note archived");
-  });
-
-  // Column Add buttons in Things screen
-  document.querySelectorAll('.btn-column-add').forEach(btn => {
+  // Time of Day
+  const tods = document.querySelectorAll('.btn-tod');
+  tods.forEach(btn => {
     btn.addEventListener('click', () => {
-      const cat = btn.getAttribute('data-category');
-      const select = document.getElementById('add-select-category');
-      if (select) select.value = cat;
-      const modalTrigger = document.getElementById('btn-things-add-modal');
-      modalTrigger?.click();
+      tods.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setIslandTheme(btn.dataset.time);
+      audio.playTap(480);
     });
   });
 
-  // Calendar inline day Add buttons
-  document.addEventListener('click', (e) => {
-    const dayAddBtn = e.target.closest('.day-add-btn');
-    if (dayAddBtn) {
-      const date = dayAddBtn.getAttribute('data-date');
-      const dayName = dayAddBtn.getAttribute('data-dayname');
-      const remDateInput = document.getElementById('add-input-rem-date');
-      if (remDateInput) remDateInput.value = date;
-      const modalTrigger = document.getElementById('cal-btn-add');
-      modalTrigger?.click();
-    }
+  const btnBreakTrigger = document.getElementById('btn-trigger-break-modal');
+  if (btnBreakTrigger) {
+    btnBreakTrigger.addEventListener('click', () => {
+      openBreakPrompt();
+      audio.playTap(460);
+    });
+  }
+}
+
+function openLivingWorld() {
+  const screen = document.getElementById('world-play-screen');
+  if (screen) {
+    screen.style.display = 'block';
+    renderIslandScene();
+  }
+}
+
+function setIslandTheme(theme) {
+  AppState.world.theme = theme;
+  const vp = document.getElementById('island-viewport');
+  if (vp) vp.className = `island-viewport theme-${theme}`;
+}
+
+let activeDockItem = null;
+
+function renderIslandScene() {
+  const layer = document.getElementById('island-entities-layer');
+  if (!layer) return;
+  layer.innerHTML = '';
+
+  AppState.world.placedEntities.forEach(ent => {
+    const el = document.createElement('div');
+    el.className = 'placed-entity';
+    el.style.left = `${ent.x}%`;
+    el.style.top = `${ent.y}%`;
+    el.innerHTML = `
+      <span class="entity-icon">${ent.icon}</span>
+      <span class="entity-label">${ent.label}</span>
+    `;
+
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      el.classList.add('spark-burst');
+      audio.playTap(600 + Math.random() * 200);
+      setTimeout(() => el.classList.remove('spark-burst'), 650);
+    });
+
+    layer.appendChild(el);
   });
 
-  // Calendar View Switch pills
-  const btnPlanner = document.getElementById('btn-view-planner');
-  const btnMonth = document.getElementById('btn-view-month');
-  btnPlanner?.addEventListener('click', () => {
-    audio.playTap();
-    btnPlanner.classList.add('active');
-    btnMonth?.classList.remove('active');
-    document.getElementById('planner-days-grid').style.gridTemplateColumns = 'repeat(auto-fit, minmax(220px, 1fr))';
-  });
-  btnMonth?.addEventListener('click', () => {
-    audio.playTap();
-    btnMonth.classList.add('active');
-    btnPlanner?.classList.remove('active');
-    document.getElementById('planner-days-grid').style.gridTemplateColumns = 'repeat(auto-fit, minmax(160px, 1fr))';
-    showCalmToast("Expanded to month layout view 📅");
-  });
+  const ground = document.getElementById('island-interactive-ground');
+  if (ground) {
+    ground.onclick = (e) => {
+      const rect = ground.getBoundingClientRect();
+      const xPct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+      const yPct = Math.round(((e.clientY - rect.top) / rect.height) * 100);
 
-  // Calendar Prev/Next periods
-  document.getElementById('cal-prev')?.addEventListener('click', () => {
-    audio.playTap();
-    showCalmToast("Viewing previous period");
-  });
-  document.getElementById('cal-next')?.addEventListener('click', () => {
-    audio.playTap();
-    showCalmToast("Viewing upcoming period");
-  });
-
-  // Things & Mind List action delegations
-  document.addEventListener('click', (e) => {
-    // Make smaller on any task
-    const unstuckBtn = e.target.closest('.action-unstuck') || e.target.closest('.action-unstuck-pill');
-    if (unstuckBtn) {
-      const title = unstuckBtn.getAttribute('data-title');
-      launchUnstuckMode(title || 'Finish my presentation');
-      return;
-    }
-
-    // Not today on any task
-    const notTodayBtn = e.target.closest('.action-nottoday') || e.target.closest('.action-nottoday-pill');
-    if (notTodayBtn) {
-      const id = notTodayBtn.getAttribute('data-id');
-      const cat = notTodayBtn.getAttribute('data-category') || 'today';
-      handleNotToday(null, id, cat);
-      return;
-    }
-
-    // Done on any task
-    const doneBtn = e.target.closest('.action-done');
-    if (doneBtn) {
-      audio.playChime();
-      const id = doneBtn.getAttribute('data-id');
-      const cat = doneBtn.getAttribute('data-category');
-      const item = AppState.things[cat]?.find(t => t.id === id);
-      if (item) {
-        item.done = !item.done;
-        renderThings();
-        showCalmToast(item.done ? "Peaceful checkoff ✓" : "Restored");
+      if (xPct > 22 && xPct < 78 && yPct > 32 && yPct < 78) {
+        placeDockPieceOnIsland(xPct, yPct);
       }
-      return;
-    }
+    };
+  }
 
-    // Schedule on any task
-    const schedBtn = e.target.closest('.action-schedule') || e.target.closest('.action-schedule-pill');
-    if (schedBtn) {
-      const title = schedBtn.getAttribute('data-title');
-      window.openScheduleModal(title);
-      return;
-    }
+  renderDockShelf();
+}
 
-    // Remind me on any task
-    const remindBtn = e.target.closest('.action-remind') || e.target.closest('.action-remind-pill');
-    if (remindBtn) {
-      audio.playTap();
-      showCalmToast("Gentle reminder set for this evening ⏰");
-      return;
-    }
+function renderDockShelf() {
+  const dock = document.getElementById('dock-pieces-row');
+  if (!dock) return;
+  dock.innerHTML = '';
 
-    // Mind checkbox
-    const mindCheck = e.target.closest('.mind-checkbox');
-    if (mindCheck) {
-      audio.playChime();
-      const itemRow = mindCheck.closest('.mind-item');
-      const id = itemRow.getAttribute('data-id');
-      const idx = AppState.mindItems.findIndex(i => i.id === id);
-      if (idx !== -1) {
-        AppState.mindItems.splice(idx, 1);
-        renderHomeScreen();
-        showCalmToast("Cleared from your mind 🌱");
-      }
-      return;
+  AppState.world.unlockedPieces.forEach(p => {
+    if (p.count > 0) {
+      const btn = document.createElement('button');
+      btn.className = `dock-piece-btn ${activeDockItem === p.name ? 'active' : ''}`;
+      btn.innerHTML = `<span>${p.icon}</span> <span>${p.name} (${p.count})</span>`;
+      btn.addEventListener('click', () => {
+        activeDockItem = (activeDockItem === p.name) ? null : p.name;
+        renderDockShelf();
+        audio.playTap(500);
+      });
+      dock.appendChild(btn);
     }
   });
+
+  if (dock.children.length === 0) {
+    dock.innerHTML = '<span style="font-size:0.8rem; color:var(--ink-tertiary); font-style:italic;">Finish work sessions to unlock more living pieces!</span>';
+  }
+}
+
+function placeDockPieceOnIsland(x, y) {
+  const target = AppState.world.unlockedPieces.find(p => p.name === activeDockItem && p.count > 0)
+              || AppState.world.unlockedPieces.find(p => p.count > 0);
+
+  if (target) {
+    target.count--;
+    AppState.world.placedEntities.push({
+      id: `e-${Date.now()}`,
+      icon: target.icon,
+      label: target.name,
+      x, y
+    });
+    audio.playChime();
+    renderIslandScene();
+
+    const dioramaCount = document.getElementById('diorama-piece-count');
+    if (dioramaCount) dioramaCount.textContent = `${AppState.world.placedEntities.length} pieces grown →`;
+  }
 }
 
 // ============================================================================
-// 14. INITIALIZATION
+// 10. MINI-ACTIVITIES (ZONE OUT, SAND ZEN, PEBBLES)
 // ============================================================================
-if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    renderHomeScreen();
-    renderCalendar();
-    renderThings();
-    renderJournal();
+function initMiniPlayTools() {
+  initPondCanvas();
+  initZenSandCanvas();
+  initPebbleGridDisplay();
+}
 
-    setupMoodCheckin();
-    setupUnstuckEvents();
-    setupBrainDump();
-    setupJournal();
-    setupAddModal();
-    setupScheduleModal();
-    setupGlobalInteractions();
+function initPondCanvas() {
+  const canvas = document.getElementById('pond-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  const ripples = [];
 
-    // Allow clicking anywhere once to initialize audio context smoothly
-    document.body.addEventListener('click', () => audio.init(), { once: true });
+  function resize() {
+    width = canvas.width = canvas.parentElement.clientWidth;
+    height = canvas.height = canvas.parentElement.clientHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function addRipple(x, y) {
+    ripples.push({
+      x, y,
+      radius: 0,
+      maxRadius: 180 + Math.random() * 80,
+      opacity: 0.8,
+      speed: 2.5,
+      hue: 200 + Math.random() * 40
+    });
+    audio.playTap(260 + Math.random() * 120);
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    addRipple(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (e.buttons === 1 && Math.random() > 0.6) {
+      const rect = canvas.getBoundingClientRect();
+      addRipple(e.clientX - rect.left, e.clientY - rect.top);
+    }
+  });
+
+  function render() {
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const r = ripples[i];
+      r.radius += r.speed;
+      r.opacity -= 0.012;
+
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `hsla(${r.hue}, 80%, 70%, ${r.opacity})`;
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      if (r.opacity <= 0) ripples.splice(i, 1);
+    }
+    requestAnimationFrame(render);
+  }
+  render();
+}
+
+function initZenSandCanvas() {
+  const canvas = document.getElementById('zen-sand-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+  let tool = 'rake';
+
+  function resize() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    smooth();
+  }
+  window.addEventListener('resize', resize);
+
+  function smooth() {
+    ctx.fillStyle = '#F3ECE1';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = 'rgba(195, 175, 150, 0.25)';
+    ctx.lineWidth = 1;
+    for (let y = 10; y < canvas.height; y += 12) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+      ctx.stroke();
+    }
+  }
+
+  resize();
+
+  const btnRake = document.getElementById('btn-sand-rake');
+  const btnStone = document.getElementById('btn-sand-stone');
+  const btnSmooth = document.getElementById('btn-sand-smooth');
+
+  if (btnRake) {
+    btnRake.onclick = () => {
+      tool = 'rake';
+      btnRake.classList.add('active');
+      if (btnStone) btnStone.classList.remove('active');
+    };
+  }
+  if (btnStone) {
+    btnStone.onclick = () => {
+      tool = 'stone';
+      btnStone.classList.add('active');
+      if (btnRake) btnRake.classList.remove('active');
+    };
+  }
+  if (btnSmooth) {
+    btnSmooth.onclick = () => {
+      smooth();
+      audio.playTap(350);
+    };
+  }
+
+  function rake(x, y) {
+    ctx.strokeStyle = 'rgba(168, 142, 114, 0.45)';
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(168, 142, 114, 0.35)';
+    ctx.fill();
+    audio.playTap(300);
+  }
+
+  function dropStone(x, y) {
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.15)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetY = 6;
+    ctx.fillStyle = '#64748B';
+    ctx.beginPath();
+    ctx.ellipse(x, y, 22, 16, Math.PI / 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    audio.playTap(220);
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    if (tool === 'rake') rake(x, y);
+    else dropStone(x, y);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (isDrawing && tool === 'rake') {
+      const rect = canvas.getBoundingClientRect();
+      rake(e.clientX - rect.left, e.clientY - rect.top);
+    }
+  });
+
+  window.addEventListener('pointerup', () => { isDrawing = false; });
+}
+
+function initPebbleGridDisplay() {
+  const grid = document.getElementById('pebble-grid-display');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const symbols = ['🍃', '🪨', '🌸', '✨', '💧', '🌾', '🌙', '🪵', '🌱', '☀️', '🐚', '🏮', '🌿', '🍂', '🍄', '🕊️'];
+  const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+
+  for (let i = 0; i < 16; i++) {
+    const stone = document.createElement('div');
+    stone.className = 'tinker-stone';
+    stone.innerHTML = symbols[i];
+
+    stone.addEventListener('click', () => {
+      audio.playTap(notes[i % notes.length]);
+      stone.style.transform = 'scale(0.85) rotate(15deg)';
+      setTimeout(() => stone.style.transform = '', 200);
+    });
+
+    grid.appendChild(stone);
+  }
+}
+
+// ============================================================================
+// 11. AI TASK ENTRY MODAL
+// ============================================================================
+function initAITaskEntryModal() {
+  const btnOpen = document.getElementById('btn-open-add-modal');
+  const modal = document.getElementById('add-task-modal');
+  const btnClose = document.getElementById('btn-close-add-dialog');
+  const inputIntent = document.getElementById('input-task-intent');
+
+  if (btnOpen && modal) {
+    btnOpen.addEventListener('click', () => {
+      modal.style.display = 'flex';
+      if (inputIntent) inputIntent.focus();
+      audio.playTap(480);
+    });
+  }
+
+  if (btnClose && modal) {
+    btnClose.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+
+  const chips = document.querySelectorAll('.quick-chip');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (inputIntent) inputIntent.value = chip.dataset.text;
+      selectDueDayPill(chip.dataset.due);
+      updateAIResponse(chip.dataset.text);
+      audio.playTap(500);
+    });
+  });
+
+  const dayPills = document.querySelectorAll('.day-select-pill');
+  dayPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      dayPills.forEach(p => p.classList.remove('selected'));
+      pill.classList.add('selected');
+      audio.playTap(460);
+    });
+  });
+
+  if (inputIntent) {
+    inputIntent.addEventListener('input', () => {
+      updateAIResponse(inputIntent.value);
+    });
+  }
+
+  const btnYes = document.getElementById('btn-ai-place-yes');
+  if (btnYes) {
+    btnYes.addEventListener('click', () => {
+      confirmAITaskCreation();
+    });
+  }
+
+  const btnSmaller = document.getElementById('btn-ai-place-smaller');
+  if (btnSmaller) {
+    btnSmaller.addEventListener('click', () => {
+      const body = document.getElementById('ai-whisper-body');
+      if (body) {
+        body.innerHTML = `
+          <p class="ai-recommend">Made smaller: <strong>4 × 15-minute micro-steps</strong>.</p>
+          <p class="ai-question">Does this feel easier to approach?</p>
+        `;
+      }
+      audio.playTap(520);
+    });
+  }
+
+  const btnSelf = document.getElementById('btn-ai-place-self');
+  if (btnSelf) {
+    btnSelf.addEventListener('click', () => {
+      confirmAITaskCreation();
+    });
+  }
+}
+
+function selectDueDayPill(day) {
+  document.querySelectorAll('.day-select-pill').forEach(p => {
+    p.classList.toggle('selected', p.dataset.day === day);
   });
 }
 
+function updateAIResponse(text) {
+  const body = document.getElementById('ai-whisper-body');
+  if (!body) return;
+  const isEmail = text.toLowerCase().includes('email') || text.toLowerCase().includes('call');
+  const count = isEmail ? 2 : 3;
+  body.innerHTML = `
+    <p class="ai-recommend">Looks like about <strong>${count} short sessions</strong> (30 min each).</p>
+    <p class="ai-question">Want me to spread those across your week?</p>
+  `;
+}
+
+function confirmAITaskCreation() {
+  const inputIntent = document.getElementById('input-task-intent');
+  const title = (inputIntent && inputIntent.value.trim()) ? inputIntent.value.trim() : 'New project';
+  const selDay = document.querySelector('.day-select-pill.selected');
+  const dueCode = selDay ? selDay.dataset.day : 'FRI';
+  const dueText = selDay ? selDay.textContent : 'Friday';
+
+  const newId = `proj-${Date.now()}`;
+  const newProject = {
+    id: newId,
+    title: title,
+    deadlineDay: dueCode,
+    deadlineText: dueText,
+    totalSessions: 3,
+    sessionDurationMin: 30,
+    sessions: [
+      {
+        id: `sess-${Date.now()}-1`,
+        projectId: newId,
+        day: 'MON',
+        title: `Outline: ${title}`,
+        durationMin: 30,
+        completed: false,
+        isToday: true
+      },
+      {
+        id: `sess-${Date.now()}-2`,
+        projectId: newId,
+        day: 'TUE',
+        title: `Draft core: ${title}`,
+        durationMin: 30,
+        completed: false,
+        isToday: false
+      },
+      {
+        id: `sess-${Date.now()}-3`,
+        projectId: newId,
+        day: dueCode === 'FRI' ? 'THU' : dueCode,
+        title: `Review & polish: ${title}`,
+        durationMin: 30,
+        completed: false,
+        isToday: false
+      }
+    ]
+  };
+
+  AppState.projects.unshift(newProject);
+  AppState.activeProjectId = newId;
+
+  const modal = document.getElementById('add-task-modal');
+  if (modal) modal.style.display = 'none';
+
+  audio.playChime();
+  renderProjectFilterPills();
+  renderMainHero();
+  renderCalendarDesk();
+  if (AppState.isDrawerOpen) renderDrawerContent();
+}
+
+// ============================================================================
+// 12. GENTLE BREAK COMPANION
+// ============================================================================
+function initBreakSystem() {
+  const modal = document.getElementById('break-prompt-modal');
+  const btnConfirm = document.getElementById('btn-confirm-break');
+  const btnDismiss = document.getElementById('btn-dismiss-break');
+
+  if (btnDismiss && modal) {
+    btnDismiss.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+
+  const opts = document.querySelectorAll('.btn-break-opt');
+  opts.forEach(btn => {
+    btn.addEventListener('click', () => {
+      opts.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      AppState.breakTimer.durationMins = parseInt(btn.dataset.mins, 10);
+      audio.playTap(480);
+    });
+  });
+
+  if (btnConfirm && modal) {
+    btnConfirm.addEventListener('click', () => {
+      modal.style.display = 'none';
+      closeFocusMode();
+      openLivingWorld();
+      startBreakCountdown(AppState.breakTimer.durationMins);
+      audio.playTap(520);
+    });
+  }
+
+  const btnReturn = document.getElementById('btn-toast-return');
+  const btnMore = document.getElementById('btn-toast-more');
+  const toast = document.getElementById('gentle-return-toast');
+
+  if (btnReturn) {
+    btnReturn.addEventListener('click', () => {
+      if (toast) toast.style.display = 'none';
+      const project = getActiveProject();
+      const s = project.sessions.find(item => item.isToday && !item.completed) || project.sessions[0];
+      if (s) launchFocusMode(s);
+      audio.playTap(500);
+    });
+  }
+
+  if (btnMore) {
+    btnMore.addEventListener('click', () => {
+      if (toast) toast.style.display = 'none';
+      startBreakCountdown(5);
+      audio.playTap(460);
+    });
+  }
+}
+
+function openBreakPrompt() {
+  const modal = document.getElementById('break-prompt-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function startBreakCountdown(mins) {
+  if (AppState.breakTimer.intervalId) clearInterval(AppState.breakTimer.intervalId);
+  AppState.breakTimer.remainingSeconds = mins * 60;
+  AppState.breakTimer.isRunning = true;
+
+  AppState.breakTimer.intervalId = setInterval(() => {
+    if (AppState.breakTimer.remainingSeconds > 0) {
+      AppState.breakTimer.remainingSeconds--;
+    } else {
+      clearInterval(AppState.breakTimer.intervalId);
+      AppState.breakTimer.isRunning = false;
+      const toast = document.getElementById('gentle-return-toast');
+      if (toast) {
+        toast.style.display = 'block';
+        audio.playChime();
+      }
+    }
+  }, 1000);
+}
+
+// ============================================================================
+// 13. AMBIENT RAIN SOUND TOGGLE
+// ============================================================================
+function initAmbientSoundToggle() {
+  const btn = document.getElementById('btn-sound-toggle');
+  const icon = document.getElementById('sound-icon');
+
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const isNowPlaying = audio.toggleAmbientRain(!audio.isAmbientPlaying);
+      btn.classList.toggle('active', isNowPlaying);
+      if (icon) icon.textContent = isNowPlaying ? '🌧️' : '🔇';
+    });
+  }
+}
