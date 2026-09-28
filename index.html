@@ -55,8 +55,8 @@
             </div>
           </div>
           <div class="diorama-text">
-            <span class="diorama-title">September World</span>
-            <span class="diorama-count" id="diorama-piece-count">12 pieces grown →</span>
+            <span class="diorama-title">Hand-Drawn World</span>
+            <span class="diorama-count" id="diorama-piece-count">1 / 6 assembled →</span>
           </div>
         </button>
       </div>
@@ -257,7 +257,7 @@
 
         <!-- Post-Scratch Options -->
         <div class="seq-actions-row" id="seq-actions-row" style="display: none;">
-          <button class="btn-seq-world" id="btn-seq-open-world">See world grow 🌿</button>
+          <button class="btn-seq-world" id="btn-seq-open-world">Assemble in World 🎨</button>
           <button class="btn-seq-desk" id="btn-seq-back-desk">Back to my day →</button>
         </div>
       </div>
@@ -281,7 +281,7 @@
 
           <!-- Sub-activities tabs -->
           <div class="play-mode-pills">
-            <button class="play-tab active" data-sub="island" id="tab-sub-island">🌱 Living Island</button>
+            <button class="play-tab active" data-sub="island" id="tab-sub-island">🎨 Hand-Drawn World</button>
             <button class="play-tab" data-sub="ripples" id="tab-sub-ripples">🫧 Zone Out</button>
             <button class="play-tab" data-sub="sand" id="tab-sub-sand">🎨 Sand Zen</button>
             <button class="play-tab" data-sub="pebbles" id="tab-sub-pebbles">🧩 Pebble Tinker</button>
@@ -305,32 +305,58 @@
         <!-- SUB-ACTIVITIES CONTENT -->
         <div class="world-stage-body">
           
-          <!-- 1. The Handcrafted Living Island -->
+          <!-- 1. The Hand-Drawn Living Illustration Assembly -->
           <div class="play-pane active" id="pane-island">
-            <div class="island-viewport" id="island-viewport">
-              <div class="island-sky">
-                <div class="celestial-orb" id="island-celestial"></div>
-                <div class="sky-cloud cloud-alpha"></div>
-                <div class="sky-cloud cloud-beta"></div>
-                <div class="sky-fauna">
-                  <span class="flutter-butterfly">🦋</span>
+            <div class="illustration-world-workspace" id="illustration-world-workspace">
+              <!-- Top Canvas Header: Instructions & Assembly Progress -->
+              <div class="illustration-canvas-header">
+                <div class="canvas-meta-info">
+                  <span class="canvas-meta-badge">VISUAL CONTINUITY PUZZLE</span>
+                  <h3 class="canvas-world-title">The Valley of the Watermill</h3>
+                  <p class="canvas-world-desc">Notice the visual connections—rooflines, roads, rivers, and branches connect the fragments into one continuous hand-drawn illustration.</p>
+                </div>
+                <div class="canvas-assembly-tracker" id="canvas-assembly-tracker">
+                  <span class="tracker-count" id="frag-tracker-count">1 / 6</span>
+                  <span class="tracker-label">assembled</span>
                 </div>
               </div>
 
-              <!-- Interactive Island Ground -->
-              <div class="island-landscape" id="island-interactive-ground">
-                <div class="island-soil-mound"></div>
-                <div class="island-stream-river"></div>
-                <div class="island-entities-layer" id="island-entities-layer">
-                  <!-- Placed objects injected here -->
+              <!-- The Master Drawing Board (Textured Watercolor Paper) -->
+              <div class="illustration-drawing-board" id="illustration-drawing-board">
+                <div class="paper-texture-overlay"></div>
+                <div class="faint-guide-lines" aria-hidden="true"></div>
+
+                <!-- Placed Continuous Fragments Layer -->
+                <div class="placed-fragments-layer" id="placed-fragments-layer">
+                  <!-- Placed SVG fragments render here seamlessly -->
+                </div>
+
+                <!-- Active Dragging Fragment Layer -->
+                <div class="active-drag-layer" id="active-drag-layer">
+                  <!-- Currently dragged fragment with magnetic snapping -->
+                </div>
+
+                <!-- Magnetic Alignment Hint Aura (subtle glow when lines match) -->
+                <div class="magnetic-snap-hint" id="magnetic-snap-hint"></div>
+
+                <!-- Snap Success Toast Notification -->
+                <div class="snap-celebration-toast" id="snap-celebration-toast" style="display: none;">
+                  <span class="snap-toast-icon">✨</span>
+                  <span class="snap-toast-msg" id="snap-toast-msg">The bridge connects across the river!</span>
                 </div>
               </div>
 
-              <!-- Bottom Inventory Shelf -->
-              <div class="island-inventory-dock">
-                <span class="dock-caption">Your unlocked pieces (tap or click terrain to place):</span>
-                <div class="dock-pieces-row" id="dock-pieces-row">
-                  <!-- Placed chips injected here -->
+              <!-- Bottom: The Sketchbook Fragment Tray (Earned & Waiting to Connect) -->
+              <div class="sketchbook-fragment-tray" id="sketchbook-fragment-tray">
+                <div class="tray-header-row">
+                  <div class="tray-header-titles">
+                    <span class="tray-title">Your Sketchbook Fragments</span>
+                    <span class="tray-subtitle">Pick up a fragment and drag it near matching lines on the drawing</span>
+                  </div>
+                  <button type="button" class="btn-unlock-test-frag" id="btn-unlock-test-frag" title="Discover another sketch fragment">+ Discover Next Fragment</button>
+                </div>
+                <div class="tray-fragments-rack" id="tray-fragments-rack">
+                  <!-- Fragment preview cards appear here -->
                 </div>
               </div>
             </div>
