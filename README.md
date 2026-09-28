@@ -71,6 +71,6 @@ FEEL THE PROGRESS
 
 1. **Serve with Node.js**:
    ```bash
-   node server.js
+   node dev-server.js
    ```
 2. Open **[http://localhost:3000](http://localhost:3000)** in your browser.

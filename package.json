@@ -1,10 +1,9 @@
 {
   "name": "the-spare-room",
   "version": "1.0.0",
-  "description": "A little extra space for your brain",
-  "main": "server.js",
+  "description": "A calm, visual task-initiation and time-visualization prototype",
+  "private": true,
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node dev-server.js"
   }
 }
