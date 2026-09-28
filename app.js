@@ -1697,13 +1697,494 @@ function triggerScratchSequenceModal(targetSession = null, targetProject = null)
 
 // ============================================================================
 // 9. THE LIVING HAND-DRAWN ILLUSTRATION PUZZLE (VISUAL CONTINUITY)
+// Powered by Authentic Hand-Drawn Reference Artworks
 // ============================================================================
+
+const ArtCollections = {
+  workshop: {
+    id: 'workshop',
+    title: "The Clockmaker's Cozy Workshop",
+    desc: 'Notice the visual connections—copper steam pipes, stone staircases, hanging lanterns, and ornate arches connect the fragments into one rich storybook drawing.',
+    image: 'assets/art/cozy_fantasy_workshop.jpg',
+    boardWidth: 700,
+    boardHeight: 468,
+    fragments: [
+      {
+        id: 'frag-ws-1',
+        name: 'The Central Arched Door & Clock',
+        subtitle: 'Anchor: Ornate Iron Hinges & Wall Gauge',
+        targetX: 235,
+        targetY: 105,
+        width: 220,
+        height: 260,
+        isUnlocked: true,
+        isPlaced: true,
+        visualClue: 'The central hearth & wooden archway with wall clock.',
+        feedback: 'The clockmaker door and glowing stained glass bell anchor the room!',
+        deckleClass: 'deckle-1'
+      },
+      {
+        id: 'frag-ws-2',
+        name: 'The Moonlit Stone Staircase & Ficus',
+        subtitle: 'Clue: Stone Arch & Ascending Steps',
+        targetX: 435,
+        targetY: 65,
+        width: 265,
+        height: 300,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'Look at the right side of the door—the stone archway and copper steam pipe continue into a moonlit stairwell with a potted ficus.',
+        feedback: 'The stone archway connects into the moonlit stairway! 🌙',
+        deckleClass: 'deckle-2'
+      },
+      {
+        id: 'frag-ws-3',
+        name: 'The Cozy Tavern Alcove & Barrel',
+        subtitle: 'Clue: Coffee Cup Sign & Copper Pipe',
+        targetX: 0,
+        targetY: 75,
+        width: 250,
+        height: 290,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The tavern wooden arch, coffee sign, and treasure chest connect onto the left wall.',
+        feedback: 'The tavern arch and wooden beams connect seamlessly! ☕',
+        deckleClass: 'deckle-3'
+      },
+      {
+        id: 'frag-ws-4',
+        name: 'The Overhead Loft & Steampunk Pipes',
+        subtitle: 'Clue: Hanging Filigree Lantern & Steam Valves',
+        targetX: 130,
+        targetY: 0,
+        width: 440,
+        height: 135,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The large hanging Moroccan lantern, brass pressure meters, and ceiling rafters drop down onto the doorway.',
+        feedback: 'The overhead pipes and lantern chains align across the ceiling! 🏮',
+        deckleClass: 'deckle-4'
+      },
+      {
+        id: 'frag-ws-5',
+        name: 'The Courtyard & Arcane Star Seal',
+        subtitle: 'Clue: Cobblestone Joints & Star Pavement',
+        targetX: 130,
+        targetY: 330,
+        width: 440,
+        height: 138,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The circular carved star stone seal and wildflower planters align across the lower courtyard floor.',
+        feedback: 'The cobblestone courtyard and star seal complete the floor! 🌸',
+        deckleClass: 'deckle-5'
+      },
+      {
+        id: 'frag-ws-6',
+        name: 'The Alchemist Rafters & Lantern Hoist',
+        subtitle: 'Clue: Timber Cornice & Upper Pipe Corner',
+        targetX: 0,
+        targetY: 0,
+        width: 170,
+        height: 120,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The upper left hanging lantern and curved copper steam pipe corner bridge the ceiling.',
+        feedback: 'The entire workshop is unified into one continuous magical drawing! ✨',
+        deckleClass: 'deckle-6'
+      }
+    ]
+  },
+  cats: {
+    id: 'cats',
+    title: 'The Whimsical Flowing Cats',
+    desc: 'Notice the visual connections—one cat’s body, tail, and whiskers flow continuously into the next in a hypnotic single-contour drawing.',
+    image: 'assets/art/continuous_line_cats.jpg',
+    boardWidth: 540,
+    boardHeight: 720,
+    fragments: [
+      {
+        id: 'frag-cat-1',
+        name: 'The Crescent Moon & Center Cats',
+        subtitle: 'Anchor: Sleeping Cat Contours',
+        targetX: 130,
+        targetY: 190,
+        width: 280,
+        height: 330,
+        isUnlocked: true,
+        isPlaced: true,
+        visualClue: 'The round sleeping cat in the center.',
+        feedback: 'The central cat curls peacefully in line!',
+        deckleClass: 'deckle-1'
+      },
+      {
+        id: 'frag-cat-2',
+        name: 'The Stretching Cat & Little Bee',
+        subtitle: 'Clue: Curving Tail & Flying Bee',
+        targetX: 350,
+        targetY: 120,
+        width: 190,
+        height: 420,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The tail curves up right toward a perched cat and honeybee.',
+        feedback: 'The curling tail flows into the watchful cat! 🐝',
+        deckleClass: 'deckle-2'
+      },
+      {
+        id: 'frag-cat-3',
+        name: 'The Tall Whisker Cat & Star',
+        subtitle: 'Clue: Long Elegant Backline',
+        targetX: 0,
+        targetY: 90,
+        width: 180,
+        height: 440,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The tall cat silhouette continues along the left boundary.',
+        feedback: 'The elegant backline connects into the tall cat! 🐱',
+        deckleClass: 'deckle-3'
+      },
+      {
+        id: 'frag-cat-4',
+        name: 'The Overhead Cat Ears & Starlight',
+        subtitle: 'Clue: Pointed Ears & Crescent Sky',
+        targetX: 110,
+        targetY: 0,
+        width: 350,
+        height: 210,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The top row of perked cat ears and starlight dots.',
+        feedback: 'The ears and starry sky crown the tapestry! 🌙',
+        deckleClass: 'deckle-4'
+      },
+      {
+        id: 'frag-cat-5',
+        name: 'The Kitten Pile & Yarn Ball',
+        subtitle: 'Clue: Wavy Groundline & Tiny Paws',
+        targetX: 40,
+        targetY: 480,
+        width: 460,
+        height: 240,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The cozy curled kitten with paws resting at the bottom.',
+        feedback: 'The cozy kitten pile completes the groundline! 🧶',
+        deckleClass: 'deckle-5'
+      },
+      {
+        id: 'frag-cat-6',
+        name: 'The Upper Corner Moon & Bird',
+        subtitle: 'Clue: Crescent Moon & Flying Finch',
+        targetX: 0,
+        targetY: 0,
+        width: 160,
+        height: 160,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The crescent moon and little songbird in the top left corner.',
+        feedback: 'The entire flowing cat tapestry is complete and alive! ✨',
+        deckleClass: 'deckle-6'
+      }
+    ]
+  },
+  tower: {
+    id: 'tower',
+    title: 'The Vintage Galata Tower & Sky',
+    desc: 'Notice the visual connections—horizontal engraved cloud lines, classical stone arches, and roof shingles connect into an architectural master etching.',
+    image: 'assets/art/ink_architectural_tower.jpg',
+    boardWidth: 460,
+    boardHeight: 770,
+    fragments: [
+      {
+        id: 'frag-tw-1',
+        name: 'The Conical Spire & Weather Vane',
+        subtitle: 'Anchor: Stone Drum & Etched Shingles',
+        targetX: 110,
+        targetY: 110,
+        width: 240,
+        height: 340,
+        isUnlocked: true,
+        isPlaced: true,
+        visualClue: 'The soaring conical tower spire.',
+        feedback: 'The historic stone spire rises into the clouds!',
+        deckleClass: 'deckle-1'
+      },
+      {
+        id: 'frag-tw-2',
+        name: 'The Classical Arches & Cornice',
+        subtitle: 'Clue: Round Roman Arches & Stippling',
+        targetX: 270,
+        targetY: 400,
+        width: 190,
+        height: 370,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The classical arched masonry on the right facade.',
+        feedback: 'The classical stone arches connect with fine masonry! 🏛️',
+        deckleClass: 'deckle-2'
+      },
+      {
+        id: 'frag-tw-3',
+        name: 'The Rooftops & Fire Escapes',
+        subtitle: 'Clue: Chimneys & Window Grilles',
+        targetX: 0,
+        targetY: 420,
+        width: 200,
+        height: 350,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The historic residential building rooftops on the left.',
+        feedback: 'The neighborhood rooftops connect beneath the tower! 🏘️',
+        deckleClass: 'deckle-3'
+      },
+      {
+        id: 'frag-tw-4',
+        name: 'The Tower Balcony & Gallery',
+        subtitle: 'Clue: Columned Balustrade',
+        targetX: 90,
+        targetY: 320,
+        width: 280,
+        height: 180,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The 360-degree observation gallery balustrade.',
+        feedback: 'The stone gallery rings the tower cleanly! 🗼',
+        deckleClass: 'deckle-4'
+      },
+      {
+        id: 'frag-tw-5',
+        name: 'The Whispering Cloud Hatching',
+        subtitle: 'Clue: Parallel Line-Engraved Sky',
+        targetX: 30,
+        targetY: 0,
+        width: 400,
+        height: 180,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The dense horizontal parallel engraved lines of the cloud canopy.',
+        feedback: 'The dramatic cloud engraving completes the sky! ☁️',
+        deckleClass: 'deckle-5'
+      },
+      {
+        id: 'frag-tw-6',
+        name: 'The Distant Harbor Spire',
+        subtitle: 'Clue: Flagpole & Classical Pediment',
+        targetX: 300,
+        targetY: 280,
+        width: 160,
+        height: 200,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The smaller distant dome and flagpole on the right horizon.',
+        feedback: 'The entire historical city engraving is unified! 🖋️',
+        deckleClass: 'deckle-6'
+      }
+    ]
+  },
+  landscape: {
+    id: 'landscape',
+    title: 'The Hatched Alpine Valley',
+    desc: 'Notice the visual connections—rhythmic parallel hatch lines in the green slopes and blue stream carry the eye through the alpine pass.',
+    image: 'assets/art/hatched_landscape.jpg',
+    boardWidth: 440,
+    boardHeight: 780,
+    fragments: [
+      {
+        id: 'frag-ls-1',
+        name: 'The Alpine Meandering Stream',
+        subtitle: 'Anchor: Blue Flow & Stepped Terraces',
+        targetX: 110,
+        targetY: 250,
+        width: 220,
+        height: 320,
+        isUnlocked: true,
+        isPlaced: true,
+        visualClue: 'The meandering stream flowing between terraced slopes.',
+        feedback: 'The alpine stream winds through the valley floor!',
+        deckleClass: 'deckle-1'
+      },
+      {
+        id: 'frag-ls-2',
+        name: 'The Pink Wildflower Meadows',
+        subtitle: 'Clue: Magenta Flower Bushes',
+        targetX: 260,
+        targetY: 420,
+        width: 180,
+        height: 360,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The pink wildflower clusters and green field lines on the right.',
+        feedback: 'The wildflower clusters bloom along the riverbank! 🌸',
+        deckleClass: 'deckle-2'
+      },
+      {
+        id: 'frag-ls-3',
+        name: 'The Left Terraced Banks',
+        subtitle: 'Clue: Vertical Green Hatching',
+        targetX: 0,
+        targetY: 420,
+        width: 180,
+        height: 360,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The left wildflower bush and horizontal pasture lines.',
+        feedback: 'The terraced pastures line the valley stream! 🌾',
+        deckleClass: 'deckle-3'
+      },
+      {
+        id: 'frag-ls-4',
+        name: 'The Snow-Capped Peak & Horizon',
+        subtitle: 'Clue: Straight Sky Lines & Snowy Summit',
+        targetX: 70,
+        targetY: 0,
+        width: 300,
+        height: 250,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The snow-covered peak and horizontal cyan sky lines.',
+        feedback: 'The snow-capped summit crowns the alpine vista! ⛰️',
+        deckleClass: 'deckle-4'
+      },
+      {
+        id: 'frag-ls-5',
+        name: 'The Blue Mountain Gorge Ridge',
+        subtitle: 'Clue: Diagonal Indigo Hatching',
+        targetX: 240,
+        targetY: 150,
+        width: 200,
+        height: 330,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The deep indigo diagonal ridge shading on the right mountain.',
+        feedback: 'The diagonal mountain ridge completes the gorge! 🌲',
+        deckleClass: 'deckle-5'
+      },
+      {
+        id: 'frag-ls-6',
+        name: 'The Whispering Pine Bluff',
+        subtitle: 'Clue: Dark Green Crag Ridge',
+        targetX: 0,
+        targetY: 150,
+        width: 180,
+        height: 330,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The dark pine crag standing tall on the left mountain flank.',
+        feedback: 'The entire alpine landscape is assembled and alive! 🌿',
+        deckleClass: 'deckle-6'
+      }
+    ]
+  },
+  celestial: {
+    id: 'celestial',
+    title: 'The Luminous Celestial City',
+    desc: 'Notice the visual connections—glowing oval portals revealing cosmic nebulae, floating bioluminescent jellyfish lanterns, and glass shopfronts connect into a futuristic night scape.',
+    image: 'assets/art/celestial_portal_city.jpg',
+    boardWidth: 540,
+    boardHeight: 720,
+    fragments: [
+      {
+        id: 'frag-cel-1',
+        name: 'The Center Moon Portal & Glass Arcade',
+        subtitle: 'Anchor: Oval Portal & Starlit Shopfront',
+        targetX: 130,
+        targetY: 180,
+        width: 280,
+        height: 340,
+        isUnlocked: true,
+        isPlaced: true,
+        visualClue: 'The oval moon portal peering into starry nebulae.',
+        feedback: 'The celestial oval portal glows with cosmic light! 🌌',
+        deckleClass: 'deckle-1'
+      },
+      {
+        id: 'frag-cel-2',
+        name: 'The Bioluminescent Jellyfish Lanterns',
+        subtitle: 'Clue: Glowing Pink Floating Domes',
+        targetX: 360,
+        targetY: 120,
+        width: 180,
+        height: 410,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The luminous pink jellyfish lanterns floating above the skybridge.',
+        feedback: 'The jellyfish lanterns drift through the evening avenue! 🎐',
+        deckleClass: 'deckle-2'
+      },
+      {
+        id: 'frag-cel-3',
+        name: 'The Left Portal Windows & Terrace',
+        subtitle: 'Clue: Blue Architecture & Balconies',
+        targetX: 0,
+        targetY: 90,
+        width: 180,
+        height: 430,
+        isUnlocked: true,
+        isPlaced: false,
+        visualClue: 'The tiered glass balconies and oval portal windows on the left facade.',
+        feedback: 'The multi-story observatory facade connects seamlessly! 🏢',
+        deckleClass: 'deckle-3'
+      },
+      {
+        id: 'frag-cel-4',
+        name: 'The Cosmic Nebula & Giant Moon',
+        subtitle: 'Clue: Cyan Starfield & Heavenly Sphere',
+        targetX: 90,
+        targetY: 0,
+        width: 360,
+        height: 210,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The cosmic nebula and celestial sphere glowing in the night sky.',
+        feedback: 'The shimmering starfield illuminates the city skyline! ⭐',
+        deckleClass: 'deckle-4'
+      },
+      {
+        id: 'frag-cel-5',
+        name: 'The Reflective Promenade & Strollers',
+        subtitle: 'Clue: Mirror Floor & Warm Lights',
+        targetX: 30,
+        targetY: 490,
+        width: 480,
+        height: 230,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The illuminated street floor with strollers and glowing shop display.',
+        feedback: 'The reflective avenue mirrors the stars below! 💫',
+        deckleClass: 'deckle-5'
+      },
+      {
+        id: 'frag-cel-6',
+        name: 'The Upper Sky Portal & Rooftop Garden',
+        subtitle: 'Clue: Deep Violet Nebula Edge',
+        targetX: 0,
+        targetY: 0,
+        width: 170,
+        height: 180,
+        isUnlocked: false,
+        isPlaced: false,
+        visualClue: 'The top left corner portal framing deep violet space.',
+        feedback: 'The entire celestial metropolis is assembled into one breathtaking drawing! ✨',
+        deckleClass: 'deckle-6'
+      }
+    ]
+  }
+};
+
+let currentArtKey = 'workshop';
+
+function getCurrentArt() {
+  return ArtCollections[currentArtKey] || ArtCollections.workshop;
+}
 
 function initLivingWorldScreen() {
   const btnOpen = document.getElementById('btn-open-world');
   const btnBack = document.getElementById('btn-back-to-desk');
   const screen = document.getElementById('world-play-screen');
   const dioramaCount = document.getElementById('diorama-piece-count');
+  const btnDeskGateway = document.getElementById('btn-desk-enter-world');
 
   if (btnOpen) {
     btnOpen.addEventListener('click', () => {
@@ -1716,6 +2197,13 @@ function initLivingWorldScreen() {
     dioramaCount.addEventListener('click', () => {
       openLivingWorld();
       audio.playTap(500);
+    });
+  }
+
+  if (btnDeskGateway) {
+    btnDeskGateway.addEventListener('click', () => {
+      openLivingWorld();
+      audio.playTap(520);
     });
   }
 
@@ -1733,6 +2221,15 @@ function initLivingWorldScreen() {
       audio.playTap(440);
     });
   }
+
+  // Art Theme Selector Buttons
+  const artBtns = document.querySelectorAll('.btn-art-theme');
+  artBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setArtCollection(btn.dataset.art);
+      audio.playTap(520);
+    });
+  });
 
   // Play sub-tabs
   const tabs = document.querySelectorAll('.play-tab');
@@ -1779,6 +2276,39 @@ function initLivingWorldScreen() {
   renderIllustrationWorkspace();
 }
 
+function setArtCollection(key) {
+  if (!ArtCollections[key]) return;
+  currentArtKey = key;
+  AppState.world.fragments = ArtCollections[key].fragments;
+
+  const titleEl = document.getElementById('canvas-world-title');
+  const descEl = document.getElementById('canvas-world-desc');
+  const art = getCurrentArt();
+
+  if (titleEl) titleEl.textContent = art.title;
+  if (descEl) descEl.textContent = art.desc;
+
+  const gatewayHeading = document.querySelector('.gateway-heading');
+  const gatewaySub = document.querySelector('.gateway-sub');
+  const gatewayIcon = document.querySelector('.gateway-icon-art');
+  const icons = {
+    workshop: '🏰',
+    cats: '🐱',
+    tower: '🗼',
+    landscape: '⛰️',
+    celestial: '🌌'
+  };
+  if (gatewayHeading) gatewayHeading.textContent = art.title;
+  if (gatewaySub) gatewaySub.textContent = art.desc;
+  if (gatewayIcon) gatewayIcon.textContent = icons[key] || '🎨';
+
+  document.querySelectorAll('.btn-art-theme').forEach(b => {
+    b.classList.toggle('active', b.dataset.art === key);
+  });
+
+  renderIllustrationWorkspace();
+}
+
 function openLivingWorld() {
   const screen = document.getElementById('world-play-screen');
   if (screen) {
@@ -1796,7 +2326,8 @@ function setBoardTheme(theme) {
 }
 
 function updateWorldTrackerCounters() {
-  const frags = AppState.world.fragments || [];
+  const art = getCurrentArt();
+  const frags = art.fragments || [];
   const placed = frags.filter(f => f.isPlaced).length;
   const total = frags.length;
 
@@ -1809,9 +2340,24 @@ function updateWorldTrackerCounters() {
   if (dioramaCount) {
     dioramaCount.textContent = `${placed} / ${total} assembled 🎨 →`;
   }
+
+  const deskPill = document.getElementById('desk-world-count-pill');
+  if (deskPill) {
+    deskPill.textContent = `${placed} / ${total} Assembled`;
+  }
 }
 
 function renderIllustrationWorkspace() {
+  const art = getCurrentArt();
+  AppState.world.fragments = art.fragments;
+
+  // Sync board dimensions
+  const board = document.getElementById('illustration-drawing-board');
+  if (board) {
+    board.style.width = `${art.boardWidth}px`;
+    board.style.height = `${art.boardHeight}px`;
+  }
+
   updateWorldTrackerCounters();
   renderPlacedFragments();
   renderSketchbookTray();
@@ -1822,17 +2368,22 @@ function renderPlacedFragments() {
   if (!layer) return;
   layer.innerHTML = '';
 
-  const placedFrags = AppState.world.fragments.filter(f => f.isPlaced);
+  const art = getCurrentArt();
+  const placedFrags = art.fragments.filter(f => f.isPlaced);
 
   placedFrags.forEach(frag => {
     const el = document.createElement('div');
-    el.className = 'placed-fragment';
+    el.className = `placed-fragment ${frag.deckleClass || ''}`;
     el.id = `placed-${frag.id}`;
     el.style.left = `${frag.targetX}px`;
     el.style.top = `${frag.targetY}px`;
     el.style.width = `${frag.width}px`;
     el.style.height = `${frag.height}px`;
-    el.innerHTML = getFragmentSVG(frag);
+
+    // Authentic slice of master reference artwork
+    el.style.backgroundImage = `url('${art.image}')`;
+    el.style.backgroundSize = `${art.boardWidth}px ${art.boardHeight}px`;
+    el.style.backgroundPosition = `-${frag.targetX}px -${frag.targetY}px`;
 
     // Subtle tactile tap response
     el.addEventListener('click', () => {
@@ -1850,14 +2401,15 @@ function renderSketchbookTray() {
   if (!rack) return;
   rack.innerHTML = '';
 
-  const unplacedFrags = AppState.world.fragments.filter(f => f.isUnlocked && !f.isPlaced);
-  const totalPlaced = AppState.world.fragments.filter(f => f.isPlaced).length;
-  const totalFrags = AppState.world.fragments.length;
+  const art = getCurrentArt();
+  const unplacedFrags = art.fragments.filter(f => f.isUnlocked && !f.isPlaced);
+  const totalPlaced = art.fragments.filter(f => f.isPlaced).length;
+  const totalFrags = art.fragments.length;
 
   if (totalPlaced === totalFrags) {
     rack.innerHTML = `
       <div class="tray-all-placed-notice">
-        <span>✨ The Valley of the Watermill is whole! All hand-drawn fragments are seamlessly connected.</span>
+        <span>✨ "${art.title}" is whole! All hand-drawn fragments are seamlessly connected.</span>
       </div>
     `;
     return;
@@ -1878,9 +2430,23 @@ function renderSketchbookTray() {
     card.id = `tray-card-${frag.id}`;
     card.setAttribute('draggable', 'false');
 
+    // Calculate thumbnail background scale
+    const thumbScale = 120 / frag.height;
+    const thumbW = art.boardWidth * thumbScale;
+    const thumbH = art.boardHeight * thumbScale;
+    const thumbPosX = -frag.targetX * thumbScale;
+    const thumbPosY = -frag.targetY * thumbScale;
+
     card.innerHTML = `
       <div class="frag-card-thumb-wrap">
-        ${getFragmentSVG(frag, true)}
+        <div class="frag-thumb-preview ${frag.deckleClass || ''}" style="
+          width: 100%;
+          height: 100%;
+          background-image: url('${art.image}');
+          background-size: ${thumbW}px ${thumbH}px;
+          background-position: ${thumbPosX}px ${thumbPosY}px;
+          background-repeat: no-repeat;
+        "></div>
       </div>
       <div class="frag-card-info">
         <h4 class="frag-card-title">${frag.name}</h4>
@@ -1906,6 +2472,7 @@ function initFragmentDragController(initialEvent, fragment) {
   audio.init();
   audio.playTap(480);
 
+  const art = getCurrentArt();
   const board = document.getElementById('illustration-drawing-board');
   const dragLayer = document.getElementById('active-drag-layer');
   const snapHint = document.getElementById('magnetic-snap-hint');
@@ -1913,12 +2480,14 @@ function initFragmentDragController(initialEvent, fragment) {
 
   const boardRect = board.getBoundingClientRect();
 
-  // Create floating drag node
+  // Create floating drag node with authentic slice of the master artwork
   const dragNode = document.createElement('div');
-  dragNode.className = 'dragging-fragment-node';
+  dragNode.className = `dragging-fragment-node ${fragment.deckleClass || ''}`;
   dragNode.style.width = `${fragment.width}px`;
   dragNode.style.height = `${fragment.height}px`;
-  dragNode.innerHTML = getFragmentSVG(fragment);
+  dragNode.style.backgroundImage = `url('${art.image}')`;
+  dragNode.style.backgroundSize = `${art.boardWidth}px ${art.boardHeight}px`;
+  dragNode.style.backgroundPosition = `-${fragment.targetX}px -${fragment.targetY}px`;
   dragLayer.appendChild(dragNode);
 
   // Position snap hint aura at the fragment's intended target
@@ -2042,7 +2611,8 @@ function showSnapCelebrationToast(message) {
 }
 
 function unlockNextIllustrationFragment(isManual = false) {
-  const lockedFrag = AppState.world.fragments.find(f => !f.isUnlocked);
+  const art = getCurrentArt();
+  const lockedFrag = art.fragments.find(f => !f.isUnlocked);
   if (lockedFrag) {
     lockedFrag.isUnlocked = true;
     audio.playDopamineChime();
@@ -2055,466 +2625,6 @@ function unlockNextIllustrationFragment(isManual = false) {
     }
     return null;
   }
-}
-
-// ----------------------------------------------------------------------------
-// HAND-DRAWN SVG GENERATORS FOR THE 6 INTERCONNECTED SECTORS
-// Visual Continuity: Roads, Bridges, Rooflines, Rivers, Pipes, Vines, & Boughs
-// ----------------------------------------------------------------------------
-function getFragmentSVG(frag, isThumbnail = false) {
-  switch (frag.id) {
-    case 'frag-1':
-      return renderSector1SVG(frag, isThumbnail);
-    case 'frag-2':
-      return renderSector2SVG(frag, isThumbnail);
-    case 'frag-3':
-      return renderSector3SVG(frag, isThumbnail);
-    case 'frag-4':
-      return renderSector4SVG(frag, isThumbnail);
-    case 'frag-5':
-      return renderSector5SVG(frag, isThumbnail);
-    case 'frag-6':
-      return renderSector6SVG(frag, isThumbnail);
-    default:
-      return '';
-  }
-}
-
-// Sector 1: Watermill Cottage & Hearth (Anchor)
-function renderSector1SVG(frag, isThumb) {
-  return `
-    <svg viewBox="0 0 270 240" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; overflow:visible;">
-      <!-- Organic Paper Deckle Background Wash -->
-      <path d="M 8 12 Q 130 6 262 14 Q 266 120 264 228 Q 135 234 10 226 Q 6 120 8 12 Z" 
-            fill="#FAF6EE" stroke="#E2DACB" stroke-width="1.2" stroke-dasharray="3,2" />
-
-      <!-- Meadow Grass Washes -->
-      <path d="M 12 18 Q 135 25 258 20 L 260 220 Q 140 228 14 220 Z" fill="#F0EDE1" opacity="0.6" />
-
-      <!-- Left Edge: Branch Stubs reaching from Ancient Oak (Seam to Sector 5) -->
-      <path d="M 0 75 Q 35 78 55 86" stroke="#4A3828" stroke-width="4.5" stroke-linecap="round" fill="none" />
-      <path d="M 0 75 Q 35 78 55 86" stroke="#69513B" stroke-width="2.5" stroke-linecap="round" fill="none" />
-      <path d="M 0 120 Q 25 125 45 130" stroke="#4A3828" stroke-width="3.5" stroke-linecap="round" fill="none" />
-      <!-- Leaf Clusters along Oak Stub -->
-      <path d="M 10 70 Q 25 60 40 72 Q 25 80 10 70 Z" fill="#758B62" stroke="#3D4B33" stroke-width="1.2" />
-      <path d="M 2 115 Q 18 105 30 118 Q 15 128 2 115 Z" fill="#88A072" stroke="#3D4B33" stroke-width="1.2" />
-
-      <!-- Bottom Edge: Cart Road & Dry-Stone Wall (Seam to Sector 4) -->
-      <path d="M 85 160 Q 95 195 105 240" stroke="#C8B89E" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.6" />
-      <path d="M 115 160 Q 125 195 135 240" stroke="#C8B89E" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.6" />
-      <!-- Cart Wheel Ruts in Dirt Trail -->
-      <path d="M 90 165 C 95 190 102 215 106 240" stroke="#8A765D" stroke-width="1.8" stroke-dasharray="6,4" fill="none" />
-      <path d="M 120 165 C 125 190 132 215 136 240" stroke="#8A765D" stroke-width="1.8" stroke-dasharray="6,4" fill="none" />
-      <!-- Dry Stone Wall Exiting South -->
-      <path d="M 148 175 Q 152 210 156 240" stroke="#4E443B" stroke-width="3" stroke-linecap="round" fill="none" />
-      <circle cx="150" cy="190" r="4" fill="#9C9283" stroke="#4E443B" stroke-width="1" />
-      <circle cx="153" cy="215" r="4.5" fill="#887E71" stroke="#4E443B" stroke-width="1" />
-      <circle cx="155" cy="235" r="4" fill="#AAA192" stroke="#4E443B" stroke-width="1" />
-
-      <!-- Millstream River Flowing East (Seam to Sector 2) -->
-      <path d="M 195 140 C 220 142 245 141 270 142 L 270 190 C 245 192 220 190 195 188 Z" fill="#8EB7C7" opacity="0.75" />
-      <!-- Water ripple ink lines -->
-      <path d="M 205 152 C 225 150 245 153 268 151" stroke="#567E8F" stroke-width="1.4" fill="none" />
-      <path d="M 215 165 C 235 163 252 166 270 164" stroke="#FFF" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.9" />
-      <path d="M 208 178 C 228 177 248 180 270 178" stroke="#567E8F" stroke-width="1.4" fill="none" />
-
-      <!-- Right Edge: Bridge Footings & Railings (Seam to Sector 2) -->
-      <!-- Bridge Timber Decking -->
-      <path d="M 225 134 C 240 135 255 136 270 137" stroke="#684A33" stroke-width="3.5" stroke-linecap="round" fill="none" />
-      <path d="M 225 122 C 240 123 255 124 270 125" stroke="#4A3423" stroke-width="2.2" stroke-linecap="round" fill="none" />
-      <line x1="242" y1="123" x2="242" y2="135" stroke="#4A3423" stroke-width="1.8" />
-      <line x1="262" y1="124" x2="262" y2="136" stroke="#4A3423" stroke-width="1.8" />
-      <!-- Bridge Foundation Pier Stones -->
-      <rect x="238" y="137" width="16" height="28" rx="2" fill="#B0A694" stroke="#4E443B" stroke-width="1.5" />
-
-      <!-- The Watermill Cottage Building -->
-      <!-- Stone Wall Base -->
-      <path d="M 75 95 L 205 95 L 205 175 L 75 175 Z" fill="#DDD5C7" stroke="#3D3228" stroke-width="2.2" stroke-linejoin="round" />
-      <!-- Random Stone Masonry Texture -->
-      <rect x="85" y="110" width="14" height="8" rx="2" fill="#C2B8A4" stroke="#4A3F33" stroke-width="1" />
-      <rect x="105" y="112" width="18" height="7" rx="2" fill="#CFC6B3" stroke="#4A3F33" stroke-width="1" />
-      <rect x="88" y="135" width="22" height="9" rx="2" fill="#C2B8A4" stroke="#4A3F33" stroke-width="1" />
-      <rect x="120" y="140" width="16" height="8" rx="2" fill="#BDB29D" stroke="#4A3F33" stroke-width="1" />
-      
-      <!-- Wooden Door with Arch -->
-      <path d="M 100 135 L 100 175 L 122 175 L 122 135 Q 111 128 100 135 Z" fill="#6B482B" stroke="#382617" stroke-width="1.8" />
-      <circle cx="118" cy="155" r="1.5" fill="#DDB258" />
-
-      <!-- Glowing Window with Panes -->
-      <rect x="145" y="115" width="24" height="26" rx="2" fill="#FCE5A4" stroke="#382617" stroke-width="1.8" />
-      <line x1="157" y1="115" x2="157" y2="141" stroke="#382617" stroke-width="1.4" />
-      <line x1="145" y1="128" x2="169" y2="128" stroke="#382617" stroke-width="1.4" />
-      <path d="M 141 113 L 173 113" stroke="#5E4029" stroke-width="2.5" stroke-linecap="round" />
-
-      <!-- The Mill Water Wheel -->
-      <circle cx="205" cy="148" r="26" fill="none" stroke="#5E4029" stroke-width="3" />
-      <circle cx="205" cy="148" r="5" fill="#3D2919" />
-      <line x1="180" y1="148" x2="230" y2="148" stroke="#5E4029" stroke-width="2" />
-      <line x1="205" y1="123" x2="205" y2="173" stroke="#5E4029" stroke-width="2" />
-      <line x1="187" y1="130" x2="223" y2="166" stroke="#5E4029" stroke-width="2" />
-      <line x1="187" y1="166" x2="223" y2="130" stroke="#5E4029" stroke-width="2" />
-
-      <!-- Terracotta Tiled Cottage Roof -->
-      <!-- Main Roof Triangle/Hip -->
-      <path d="M 60 98 L 140 35 L 220 98 Z" fill="#D36B46" stroke="#3D2B1F" stroke-width="2.4" stroke-linejoin="round" />
-      <!-- Roof Tile Shingle Lines -->
-      <path d="M 80 82 Q 140 45 200 82" stroke="#A84C2C" stroke-width="1.8" fill="none" />
-      <path d="M 70 92 Q 140 55 210 92" stroke="#A84C2C" stroke-width="1.8" fill="none" />
-
-      <!-- Top Edge: Roof Ridge & Chimney (Seam to Sector 3) -->
-      <!-- Roof Ridge Peak continuing upward -->
-      <path d="M 132 40 L 140 35 L 148 40" stroke="#3D2B1F" stroke-width="2.2" fill="none" />
-      <!-- Copper Kitchen Stovepipe -->
-      <path d="M 166 45 L 166 18 Q 170 12 176 16 L 176 53" fill="#C47A46" stroke="#3D2B1F" stroke-width="1.8" />
-      <!-- Wispy Chimney Smoke curling North -->
-      <path d="M 172 12 Q 175 4 170 0" stroke="#A99E91" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6" />
-      <!-- Purple Wisteria Vines Climbing Left Roof Pitch (Seam to Sector 3) -->
-      <path d="M 78 85 Q 95 55 105 30" stroke="#48633D" stroke-width="2" fill="none" />
-      <circle cx="88" cy="68" r="3.5" fill="#9B72AA" />
-      <circle cx="98" cy="52" r="4" fill="#B388C4" />
-      <circle cx="106" cy="34" r="3.5" fill="#9B72AA" />
-
-      <!-- Warm Lantern by the Door -->
-      <line x1="90" y1="125" x2="96" y2="125" stroke="#3D2919" stroke-width="1.5" />
-      <rect x="92" y="127" width="6" height="9" rx="1" fill="#FFDA73" stroke="#3D2919" stroke-width="1.2" />
-    </svg>
-  `;
-}
-
-// Sector 2: Arched Bridge & River Basin (Connects to Sector 1 on Left, Sector 6 on Top)
-function renderSector2SVG(frag, isThumb) {
-  return `
-    <svg viewBox="0 0 280 230" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; overflow:visible;">
-      <!-- Organic Paper Wash Background -->
-      <path d="M 8 10 Q 140 4 272 12 Q 275 115 270 220 Q 135 228 10 222 Q 4 110 8 10 Z" 
-            fill="#FAF6EE" stroke="#E2DACB" stroke-width="1.2" stroke-dasharray="3,2" />
-
-      <!-- River Basin Body (Receives waterfall from Sector 6 above and continues from Sector 1 left) -->
-      <path d="M 0 102 C 40 104 80 110 120 125 C 160 140 190 170 215 225 L 0 225 Z" fill="#7EABB9" opacity="0.75" />
-      <path d="M 60 0 C 70 40 85 80 115 125" stroke="#FFF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8" />
-      <path d="M 90 0 C 95 35 110 75 135 120" stroke="#A8D1DE" stroke-width="2.2" stroke-linecap="round" fill="none" />
-
-      <!-- Left Seam to Sector 1: Continuing the Bridge -->
-      <!-- Upper Handrail -->
-      <path d="M 0 105 C 45 104 90 103 150 104" stroke="#4A3423" stroke-width="2.4" stroke-linecap="round" fill="none" />
-      <!-- Lower Decking Walkway -->
-      <path d="M 0 117 C 45 116 90 115 150 116" stroke="#684A33" stroke-width="3.5" stroke-linecap="round" fill="none" />
-      <!-- Balusters -->
-      <line x1="20" y1="105" x2="20" y2="117" stroke="#4A3423" stroke-width="1.8" />
-      <line x1="45" y1="105" x2="45" y2="117" stroke="#4A3423" stroke-width="1.8" />
-      <line x1="75" y1="104" x2="75" y2="116" stroke="#4A3423" stroke-width="1.8" />
-      <line x1="110" y1="104" x2="110" y2="116" stroke="#4A3423" stroke-width="1.8" />
-      <line x1="140" y1="104" x2="140" y2="116" stroke="#4A3423" stroke-width="1.8" />
-
-      <!-- Majestic Stone Arch Underneath Bridge -->
-      <path d="M 10 120 Q 75 112 145 155 L 140 170 Q 75 128 10 135 Z" fill="#BDB3A1" stroke="#3D3328" stroke-width="1.8" />
-      <!-- Keystones in the Arch -->
-      <line x1="35" y1="117" x2="33" y2="129" stroke="#3D3328" stroke-width="1.4" />
-      <line x1="60" y1="114" x2="59" y2="127" stroke="#3D3328" stroke-width="1.4" />
-      <line x1="88" y1="115" x2="86" y2="132" stroke="#3D3328" stroke-width="1.4" />
-      <line x1="115" y1="123" x2="112" y2="142" stroke="#3D3328" stroke-width="1.4" />
-
-      <!-- Cozy Bridge Fisherman sitting on the balustrade -->
-      <ellipse cx="92" cy="98" rx="5" ry="6" fill="#88735C" stroke="#382819" stroke-width="1.4" />
-      <circle cx="92" cy="90" r="4.5" fill="#E8C7A0" stroke="#382819" stroke-width="1.2" />
-      <!-- Straw Hat -->
-      <path d="M 83 88 Q 92 82 101 88 Z" fill="#DDB766" stroke="#382819" stroke-width="1.2" />
-      <!-- Fishing Rod dangling line into river -->
-      <line x1="94" y1="94" x2="128" y2="78" stroke="#5E4129" stroke-width="1.5" stroke-linecap="round" />
-      <path d="M 128 78 Q 135 110 132 165" stroke="#FFF" stroke-width="1" stroke-dasharray="3,2" fill="none" opacity="0.8" />
-      <!-- Red Float Bobber -->
-      <circle cx="132" cy="165" r="2.5" fill="#D94E34" stroke="#FFF" stroke-width="0.8" />
-
-      <!-- Riverbank Rocks & Water Lilies -->
-      <circle cx="35" cy="180" r="9" fill="#B5AC9E" stroke="#42392E" stroke-width="1.5" />
-      <circle cx="50" cy="188" r="6" fill="#A19889" stroke="#42392E" stroke-width="1.5" />
-      <!-- Water Lily Pads -->
-      <ellipse cx="65" cy="155" rx="8" ry="4" fill="#58855A" stroke="#2D472E" stroke-width="1" />
-      <ellipse cx="80" cy="168" rx="10" ry="5" fill="#6B996D" stroke="#2D472E" stroke-width="1" />
-      <circle cx="82" cy="166" r="2.5" fill="#FCE5EB" />
-
-      <!-- Right Edge & Top Edge: Granite Mountain Cliff & Carved Steps (Seam to Sector 6) -->
-      <path d="M 150 115 Q 170 120 185 105 Q 210 95 240 50 Q 255 30 270 0 L 280 0 L 280 230 L 195 230 Q 170 180 150 115 Z" 
-            fill="#D3CCC0" stroke="#3B3227" stroke-width="2.2" stroke-linejoin="round" />
-      <!-- Rock Crevice Hatching -->
-      <path d="M 215 110 L 235 90" stroke="#7A6F60" stroke-width="1.4" />
-      <path d="M 220 125 L 245 102" stroke="#7A6F60" stroke-width="1.4" />
-      <path d="M 235 150 L 260 130" stroke="#7A6F60" stroke-width="1.4" />
-
-      <!-- Stone Steps Carved into Cliff Face climbing toward mountain -->
-      <path d="M 152 110 L 168 110 L 168 102 L 184 102 L 184 92 L 202 92 L 202 80 L 220 80 L 220 66 L 240 66 L 240 50" 
-            stroke="#3B3227" stroke-width="2" stroke-linejoin="round" fill="none" />
-      
-      <!-- Mountain Pine Clinging to Cliff -->
-      <path d="M 245 42 L 245 55" stroke="#483321" stroke-width="2.5" />
-      <path d="M 235 48 L 245 32 L 255 48 Z" fill="#4B6344" stroke="#2C3D28" stroke-width="1.4" />
-      <path d="M 238 36 L 245 22 L 252 36 Z" fill="#5A7852" stroke="#2C3D28" stroke-width="1.4" />
-    </svg>
-  `;
-}
-
-// Sector 3: Clocktower & Starlit Observatory (Connects to Sector 1 Below, Sector 6 Right)
-function renderSector3SVG(frag, isThumb) {
-  return `
-    <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; overflow:visible;">
-      <!-- Organic Paper Wash Background -->
-      <path d="M 8 10 Q 130 6 252 12 Q 256 100 252 192 Q 128 196 10 190 Q 6 95 8 10 Z" 
-            fill="#FAF6EE" stroke="#E2DACB" stroke-width="1.2" stroke-dasharray="3,2" />
-
-      <!-- Bottom Seam: Cottage Roofline, Stovepipe, & Wisteria Continuing down to Sector 1 -->
-      <!-- Cottage Roof Peak Seam: connects at (110, 195) -->
-      <path d="M 60 195 Q 110 190 160 198" stroke="#3D2B1F" stroke-width="2.5" stroke-dasharray="4,2" fill="none" />
-      <!-- Copper Kitchen Stovepipe connecting from (140, 180) -->
-      <path d="M 136 200 L 136 175 Q 142 165 150 170 L 150 200" fill="#C47A46" stroke="#3D2B1F" stroke-width="1.8" />
-      <!-- Purple Wisteria Vines Twining Up from Sector 1 -->
-      <path d="M 75 195 Q 82 170 90 145" stroke="#48633D" stroke-width="2.2" fill="none" />
-      <circle cx="78" cy="180" r="4" fill="#9B72AA" />
-      <circle cx="85" cy="162" r="4.5" fill="#B388C4" />
-      <circle cx="92" cy="146" r="4" fill="#9B72AA" />
-
-      <!-- The Timber-Frame Clocktower -->
-      <!-- Main Tower Body -->
-      <path d="M 85 75 L 165 75 L 160 185 L 90 185 Z" fill="#E6DFD1" stroke="#3B2E22" stroke-width="2.2" stroke-linejoin="round" />
-      <!-- Half-timbering Tudor Cross-Beams -->
-      <line x1="88" y1="130" x2="162" y2="130" stroke="#5E4029" stroke-width="2.5" />
-      <line x1="88" y1="130" x2="162" y2="185" stroke="#5E4029" stroke-width="2" />
-      <line x1="162" y1="130" x2="88" y2="185" stroke="#5E4029" stroke-width="2" />
-
-      <!-- Clock Face with Roman Numerals -->
-      <circle cx="125" cy="102" r="18" fill="#FFF9E8" stroke="#3B2E22" stroke-width="2" />
-      <circle cx="125" cy="102" r="15" fill="none" stroke="#D1BE8E" stroke-width="1" stroke-dasharray="2,2" />
-      <!-- Clock Hands pointing to 3:30 -->
-      <line x1="125" y1="102" x2="134" y2="102" stroke="#3B2E22" stroke-width="2.2" stroke-linecap="round" />
-      <line x1="125" y1="102" x2="125" y2="113" stroke="#3B2E22" stroke-width="1.8" stroke-linecap="round" />
-      <circle cx="125" cy="102" r="2" fill="#D49E35" />
-
-      <!-- Open Balcony with Starlit Brass Telescope -->
-      <!-- Balcony Railing on Right Side -->
-      <path d="M 165 110 L 205 110 L 205 130 L 165 130" fill="#755235" stroke="#3B2E22" stroke-width="1.8" />
-      <line x1="175" y1="110" x2="175" y2="130" stroke="#3B2E22" stroke-width="1.4" />
-      <line x1="190" y1="110" x2="190" y2="130" stroke="#3B2E22" stroke-width="1.4" />
-      <line x1="202" y1="110" x2="202" y2="130" stroke="#3B2E22" stroke-width="1.4" />
-
-      <!-- Polished Brass Astronomical Telescope -->
-      <line x1="180" y1="124" x2="188" y2="104" stroke="#4A3B2C" stroke-width="2" />
-      <line x1="195" y1="124" x2="188" y2="104" stroke="#4A3B2C" stroke-width="2" />
-      <path d="M 174 112 L 208 92 L 213 98 L 178 118 Z" fill="#DDB550" stroke="#4A3B2C" stroke-width="1.6" />
-      <circle cx="211" cy="95" r="4" fill="#C2DCEB" stroke="#4A3B2C" stroke-width="1" />
-
-      <!-- Steep Slate Clocktower Spire / Roof -->
-      <path d="M 75 76 L 125 18 L 175 76 Z" fill="#586A7A" stroke="#2B3640" stroke-width="2.4" stroke-linejoin="round" />
-      <!-- Slate Shingles Lines -->
-      <path d="M 90 60 L 160 60" stroke="#40505E" stroke-width="1.6" />
-      <path d="M 105 44 L 145 44" stroke="#40505E" stroke-width="1.6" />
-
-      <!-- Golden Brass Weather Vane Rooster at Peak -->
-      <line x1="125" y1="18" x2="125" y2="4" stroke="#9E782A" stroke-width="2" />
-      <path d="M 120 8 Q 125 2 132 7 Q 127 12 120 8 Z" fill="#E5B942" stroke="#9E782A" stroke-width="1" />
-
-      <!-- Little Wise Owl resting on eave corbel -->
-      <ellipse cx="78" cy="74" rx="4.5" ry="6" fill="#8A6E55" stroke="#3B2E22" stroke-width="1.2" />
-      <circle cx="76" cy="71" r="1.5" fill="#FFE27A" />
-      <circle cx="80" cy="71" r="1.5" fill="#FFE27A" />
-
-      <!-- Delicate Evening Clouds & Starlight -->
-      <path d="M 18 35 Q 40 25 60 36" stroke="#D1C8BA" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.6" />
-      <path d="M 195 25 Q 220 18 245 28" stroke="#D1C8BA" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.6" />
-      <!-- Little 4-point sparkle star -->
-      <path d="M 225 38 L 227 44 L 233 46 L 227 48 L 225 54 L 223 48 L 217 46 L 223 44 Z" fill="#FCE5A4" />
-    </svg>
-  `;
-}
-
-// Sector 4: Cobblestone Lane & Pumpkin Patch (Connects to Sector 1 Above)
-function renderSector4SVG(frag, isThumb) {
-  return `
-    <svg viewBox="0 0 290 190" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; overflow:visible;">
-      <!-- Organic Paper Wash Background -->
-      <path d="M 8 10 Q 145 4 282 12 Q 285 95 280 182 Q 140 188 10 180 Q 4 95 8 10 Z" 
-            fill="#FAF6EE" stroke="#E2DACB" stroke-width="1.2" stroke-dasharray="3,2" />
-
-      <!-- Warm Country Meadow Wash -->
-      <path d="M 12 15 Q 145 20 276 18 L 275 175 Q 140 180 14 175 Z" fill="#EDE9DA" opacity="0.6" />
-
-      <!-- Top Seam: Dirt Wagon Trail entering from Sector 1 (X: 110-170) -->
-      <!-- Road curves gently through countryside -->
-      <path d="M 110 0 C 114 40 125 90 145 190 L 195 190 C 180 90 172 40 170 0 Z" fill="#D9CBB7" opacity="0.8" />
-      
-      <!-- Hand-laid Cobblestones filling the lane -->
-      <!-- Row 1 -->
-      <ellipse cx="125" cy="25" rx="5.5" ry="3.5" fill="#C2B49F" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="140" cy="22" rx="6.5" ry="4" fill="#B0A08B" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="155" cy="26" rx="5" ry="3.5" fill="#C7BBA8" stroke="#5E4F3E" stroke-width="1" />
-      <!-- Row 2 -->
-      <ellipse cx="128" cy="50" rx="6" ry="4" fill="#B0A08B" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="144" cy="52" rx="7" ry="4.5" fill="#C2B49F" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="160" cy="48" rx="6" ry="4" fill="#A89883" stroke="#5E4F3E" stroke-width="1" />
-      <!-- Row 3 -->
-      <ellipse cx="132" cy="85" rx="7" ry="4.5" fill="#C7BBA8" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="150" cy="88" rx="6.5" ry="4" fill="#B0A08B" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="168" cy="84" rx="7" ry="4.5" fill="#C2B49F" stroke="#5E4F3E" stroke-width="1" />
-      <!-- Row 4 -->
-      <ellipse cx="140" cy="125" rx="8" ry="5" fill="#B8A893" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="158" cy="128" rx="7" ry="4.5" fill="#C7BBA8" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="176" cy="122" rx="8" ry="5" fill="#A89883" stroke="#5E4F3E" stroke-width="1" />
-      <!-- Row 5 -->
-      <ellipse cx="148" cy="165" rx="8.5" ry="5" fill="#C2B49F" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="168" cy="168" rx="8" ry="5" fill="#B0A08B" stroke="#5E4F3E" stroke-width="1" />
-      <ellipse cx="186" cy="162" rx="7.5" ry="4.5" fill="#C7BBA8" stroke="#5E4F3E" stroke-width="1" />
-
-      <!-- Top Seam: Dry-Stone Wall continuing from Sector 1 (X: 185) -->
-      <path d="M 185 0 C 188 45 195 90 205 190" stroke="#4A3F33" stroke-width="3" stroke-linecap="round" fill="none" />
-      <!-- Stone Wall Boulders -->
-      <ellipse cx="186" cy="15" rx="6" ry="5" fill="#AAA090" stroke="#4A3F33" stroke-width="1.2" />
-      <ellipse cx="188" cy="40" rx="7" ry="6" fill="#958A7A" stroke="#4A3F33" stroke-width="1.2" />
-      <ellipse cx="192" cy="72" rx="8" ry="6.5" fill="#B5AB9B" stroke="#4A3F33" stroke-width="1.2" />
-      <ellipse cx="198" cy="110" rx="8" ry="6.5" fill="#958A7A" stroke="#4A3F33" stroke-width="1.2" />
-      <ellipse cx="204" cy="155" rx="9" ry="7" fill="#AAA090" stroke="#4A3F33" stroke-width="1.2" />
-
-      <!-- Curious Barn Cat sitting on stone wall -->
-      <ellipse cx="190" cy="28" rx="4" ry="5.5" fill="#DE7A3E" stroke="#3D2919" stroke-width="1" />
-      <circle cx="190" cy="22" r="3" fill="#DE7A3E" stroke="#3D2919" stroke-width="1" />
-      <!-- Tail hanging down wall -->
-      <path d="M 194 32 Q 198 38 196 44" stroke="#DE7A3E" stroke-width="1.8" stroke-linecap="round" fill="none" />
-
-      <!-- The Country Pumpkin Patch (Right of Wall) -->
-      <path d="M 205 40 Q 245 45 275 40 L 275 160 Q 235 165 210 160 Z" fill="#E6DFCC" opacity="0.6" />
-      <!-- Plump Orange Pumpkins -->
-      <!-- Pumpkin 1 -->
-      <ellipse cx="230" cy="75" rx="14" ry="11" fill="#E87D38" stroke="#3B2615" stroke-width="1.5" />
-      <path d="M 230 64 Q 233 58 236 60" stroke="#4A633B" stroke-width="2" stroke-linecap="round" fill="none" />
-      <!-- Pumpkin 2 -->
-      <ellipse cx="255" cy="95" rx="16" ry="13" fill="#DB6E28" stroke="#3B2615" stroke-width="1.5" />
-      <path d="M 255 82 Q 252 75 258 78" stroke="#4A633B" stroke-width="2.2" stroke-linecap="round" fill="none" />
-      <!-- Pumpkin 3 -->
-      <ellipse cx="235" cy="130" rx="13" ry="10" fill="#E87D38" stroke="#3B2615" stroke-width="1.5" />
-      <!-- Curling Pumpkin Vines -->
-      <path d="M 220 80 Q 240 100 250 120" stroke="#557544" stroke-width="1.6" fill="none" />
-
-      <!-- Wooden Fingerpost Signpost on Left Side -->
-      <line x1="85" y1="65" x2="85" y2="135" stroke="#5E4029" stroke-width="3" stroke-linecap="round" />
-      <!-- Top Finger pointing north: "← TO MILL" -->
-      <path d="M 85 75 L 50 75 L 42 81 L 50 87 L 85 87 Z" fill="#E0D5C3" stroke="#422D1D" stroke-width="1.4" />
-      <text x="48" y="83" font-family="serif" font-size="6.5" font-weight="bold" fill="#3D2B1F">← MILL</text>
-      <!-- Bottom Finger pointing south: "ORCHARD →" -->
-      <path d="M 85 95 L 120 95 L 128 101 L 120 107 L 85 107 Z" fill="#E0D5C3" stroke="#422D1D" stroke-width="1.4" />
-      <text x="89" y="103" font-family="serif" font-size="6" font-weight="bold" fill="#3D2B1F">ORCHARD →</text>
-
-      <!-- Nodding Country Sunflowers -->
-      <path d="M 30 140 Q 35 105 32 80" stroke="#4D6B3C" stroke-width="2" fill="none" />
-      <circle cx="32" cy="78" r="7" fill="#5E381A" stroke="#2B1A0C" stroke-width="1" />
-      <circle cx="32" cy="78" r="11" fill="none" stroke="#EBB534" stroke-width="3.5" stroke-dasharray="3,2" />
-    </svg>
-  `;
-}
-
-// Sector 5: Ancient Oak & Windmill Bluff (Connects to Sector 1 Right)
-function renderSector5SVG(frag, isThumb) {
-  return `
-    <svg viewBox="0 0 240 270" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; overflow:visible;">
-      <!-- Organic Paper Wash Background -->
-      <path d="M 8 10 Q 120 4 232 12 Q 236 135 232 260 Q 120 266 10 258 Q 4 135 8 10 Z" 
-            fill="#FAF6EE" stroke="#E2DACB" stroke-width="1.2" stroke-dasharray="3,2" />
-
-      <!-- Grassy Knoll Bluff Wash -->
-      <path d="M 12 140 Q 90 120 180 150 Q 215 160 236 165 L 236 255 L 12 255 Z" fill="#E5E2D1" opacity="0.7" />
-
-      <!-- Right Seam: Giant Knotted Oak Boughs reaching toward Sector 1 (Y: 115 and Y: 160) -->
-      <!-- Massive Oak Trunk Rooted on Bluff -->
-      <path d="M 75 240 C 70 190 85 150 110 130 C 135 110 190 112 240 115" stroke="#453323" stroke-width="14" stroke-linecap="round" fill="none" />
-      <path d="M 75 240 C 70 190 85 150 110 130 C 135 110 190 112 240 115" stroke="#634B36" stroke-width="10" stroke-linecap="round" fill="none" />
-      <!-- Lower Bough extending to seam Y: 160 -->
-      <path d="M 120 135 Q 170 148 240 160" stroke="#453323" stroke-width="8" stroke-linecap="round" fill="none" />
-      <path d="M 120 135 Q 170 148 240 160" stroke="#634B36" stroke-width="5.5" stroke-linecap="round" fill="none" />
-      
-      <!-- Bark Texturing & Knothole -->
-      <path d="M 72 230 C 76 195 82 170 95 150" stroke="#332417" stroke-width="1.6" fill="none" />
-      <path d="M 88 235 C 92 190 102 165 115 145" stroke="#332417" stroke-width="1.6" fill="none" />
-      <!-- Cozy Hollow Knothole -->
-      <ellipse cx="98" cy="165" rx="5.5" ry="9" fill="#24170E" stroke="#453323" stroke-width="1.8" />
-
-      <!-- Swaying Paper Lantern hanging from limb -->
-      <line x1="165" y1="112" x2="165" y2="135" stroke="#332417" stroke-width="1.2" />
-      <rect x="158" y="135" width="14" height="18" rx="2" fill="#FFEAA8" stroke="#453323" stroke-width="1.6" />
-      <line x1="158" y1="144" x2="172" y2="144" stroke="#453323" stroke-width="1" />
-      <circle cx="165" cy="144" r="2.5" fill="#FFA533" />
-
-      <!-- Giant Lush Oak Leaf Canopy -->
-      <!-- Canopy Cloud Mass 1 -->
-      <path d="M 40 80 Q 25 50 55 35 Q 85 20 115 35 Q 155 15 185 45 Q 215 40 225 70 Q 235 100 205 115 Q 175 130 145 115 Q 115 125 85 115 Q 55 110 40 80 Z" 
-            fill="#698555" stroke="#2B3B22" stroke-width="2.2" stroke-linejoin="round" />
-      <!-- Interior Leaf Layers with watercolor highlight -->
-      <path d="M 65 65 Q 85 40 120 50 Q 155 35 175 60 Q 195 75 175 95 Q 140 105 110 95 Q 80 100 65 65 Z" 
-            fill="#809E69" stroke="#3B4F30" stroke-width="1.4" opacity="0.8" />
-
-      <!-- Cheerful Songbird Perched on Upper Branch -->
-      <ellipse cx="140" cy="40" rx="4.5" ry="3.5" fill="#4B88A6" stroke="#1F3F52" stroke-width="1" />
-      <circle cx="144" cy="38" r="2.5" fill="#D65638" />
-      <line x1="146" y1="38" x2="149" y2="39" stroke="#E0A72B" stroke-width="1" />
-
-      <!-- Rustic Canvas Windmill on the Meadow Bluff in Background -->
-      <!-- Tower Body -->
-      <path d="M 28 175 L 48 175 L 44 135 L 32 135 Z" fill="#DDD5C7" stroke="#453628" stroke-width="1.6" />
-      <path d="M 26 135 L 50 135 L 38 120 Z" fill="#996043" stroke="#453628" stroke-width="1.6" />
-      <!-- Windmill 4 Canvas Sails -->
-      <line x1="15" y1="130" x2="61" y2="130" stroke="#3D2E21" stroke-width="1.8" />
-      <line x1="38" y1="107" x2="38" y2="153" stroke="#3D2E21" stroke-width="1.8" />
-      <rect x="16" y="125" width="18" height="5" fill="#F4EFE6" stroke="#453628" stroke-width="0.8" />
-      <rect x="42" y="130" width="18" height="5" fill="#F4EFE6" stroke="#453628" stroke-width="0.8" />
-      <rect x="38" y="108" width="5" height="18" fill="#F4EFE6" stroke="#453628" stroke-width="0.8" />
-      <rect x="33" y="134" width="5" height="18" fill="#F4EFE6" stroke="#453628" stroke-width="0.8" />
-      <circle cx="38" cy="130" r="2.5" fill="#453628" />
-    </svg>
-  `;
-}
-
-// Sector 6: Mountain Waterfall & Alpine Aqueduct (Connects to Sector 2 Below)
-function renderSector6SVG(frag, isThumb) {
-  return `
-    <svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%; overflow:visible;">
-      <!-- Organic Paper Wash Background -->
-      <path d="M 8 10 Q 130 4 252 12 Q 256 105 250 202 Q 128 206 10 198 Q 4 105 8 10 Z" 
-            fill="#FAF6EE" stroke="#E2DACB" stroke-width="1.2" stroke-dasharray="3,2" />
-
-      <!-- Alpine Sky & Snow-capped Peaks -->
-      <path d="M 12 75 L 65 20 L 115 75 Z" fill="#CAD7E0" stroke="#425766" stroke-width="2" stroke-linejoin="round" />
-      <path d="M 65 20 L 52 42 L 65 36 L 78 44 Z" fill="#FFF" stroke="#425766" stroke-width="1.5" />
-      
-      <path d="M 105 80 L 165 14 L 225 80 Z" fill="#B5C6D1" stroke="#3D4F5C" stroke-width="2" stroke-linejoin="round" />
-      <path d="M 165 14 L 148 40 L 165 32 L 182 42 Z" fill="#FFF" stroke="#3D4F5C" stroke-width="1.5" />
-
-      <!-- Granite Mountain Canyon Gorge -->
-      <path d="M 30 75 L 65 120 L 60 210 L 15 210 L 20 110 Z" fill="#C8C0B3" stroke="#3B3227" stroke-width="2" />
-      <path d="M 140 75 L 145 120 L 175 210 L 255 210 L 250 80 Z" fill="#C8C0B3" stroke="#3B3227" stroke-width="2" />
-
-      <!-- Roman-style Stone Aqueduct Bridging the Chasm -->
-      <!-- Aqueduct Canal Beam -->
-      <path d="M 50 105 L 165 105 L 165 122 L 50 122 Z" fill="#D3C9B8" stroke="#3B3227" stroke-width="1.8" />
-      <!-- Aqueduct Arches -->
-      <path d="M 65 122 Q 85 108 105 122" stroke="#3B3227" stroke-width="1.8" fill="none" />
-      <path d="M 110 122 Q 130 108 150 122" stroke="#3B3227" stroke-width="1.8" fill="none" />
-      <line x1="107" y1="122" x2="107" y2="155" stroke="#3B3227" stroke-width="2" />
-
-      <!-- The Rushing Mountain Waterfall (Plunges down to Sector 2 Seam at Bottom X: 60-120) -->
-      <!-- Waterfall Water Streams -->
-      <path d="M 75 110 C 72 140 68 175 70 210 L 115 210 C 118 175 112 140 108 110 Z" fill="#91BAC9" opacity="0.85" />
-      <!-- Foaming White Rushes & Foam Lines -->
-      <path d="M 82 112 C 80 145 76 180 78 210" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" fill="none" />
-      <path d="M 94 112 C 95 145 92 180 94 210" stroke="#E1F2F7" stroke-width="3" stroke-linecap="round" fill="none" />
-      <path d="M 104 112 C 106 145 102 180 105 210" stroke="#FFF" stroke-width="2.2" stroke-linecap="round" fill="none" />
-      <!-- Water Spray & Mist at Seam Base -->
-      <circle cx="76" cy="205" r="5" fill="#FFF" opacity="0.7" />
-      <circle cx="92" cy="202" r="7" fill="#FFF" opacity="0.8" />
-      <circle cx="108" cy="205" r="6" fill="#FFF" opacity="0.7" />
-
-      <!-- Alpine Evergreens Clinging to the Cliffs -->
-      <path d="M 38 120 L 48 105 L 58 120 Z" fill="#3D5438" stroke="#1F2E1C" stroke-width="1.2" />
-      <path d="M 40 110 L 48 98 L 56 110 Z" fill="#4B6945" stroke="#1F2E1C" stroke-width="1.2" />
-
-      <path d="M 165 145 L 178 128 L 191 145 Z" fill="#3D5438" stroke="#1F2E1C" stroke-width="1.2" />
-      <path d="M 168 134 L 178 120 L 188 134 Z" fill="#4B6945" stroke="#1F2E1C" stroke-width="1.2" />
-    </svg>
-  `;
 }
 
 // ============================================================================

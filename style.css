@@ -1759,62 +1759,145 @@ body {
   align-items: flex-end;
   justify-content: space-between;
   gap: 1.5rem;
-  padding: 0 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.canvas-meta-badge {
-  display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--accent-clay);
-  text-transform: uppercase;
-  margin-bottom: 0.25rem;
+/* Direct Portal to Hand-Drawn Living World (Main Desk) */
+.world-direct-gateway-section {
+  margin: 1.85rem 0 2.25rem;
 }
 
-.canvas-world-title {
-  font-family: var(--font-serif);
-  font-size: 1.85rem;
-  font-weight: 500;
-  color: var(--ink-primary);
-  margin-bottom: 0.2rem;
-}
-
-.canvas-world-desc {
-  font-size: 0.88rem;
-  color: var(--ink-secondary);
-  max-width: 620px;
-  line-height: 1.4;
-}
-
-.canvas-assembly-tracker {
+.btn-desk-enter-world {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #FFFDF8 0%, #F5EFE4 100%);
+  border: 1.5px solid rgba(45, 38, 30, 0.14);
+  border-radius: 1.5rem;
+  padding: 1.25rem 1.65rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 16px rgba(45, 38, 30, 0.05);
+}
+
+.btn-desk-enter-world:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-clay);
+  box-shadow: 0 12px 28px rgba(45, 38, 30, 0.12);
+  background: linear-gradient(135deg, #FFFFFF 0%, #F9F4EB 100%);
+}
+
+.gateway-icon-art {
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  background: #FFF;
+  border: 1px solid rgba(45, 38, 30, 0.1);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
   flex-shrink: 0;
 }
 
-.tracker-count {
-  font-family: var(--font-serif);
-  font-size: 1.85rem;
-  font-weight: 600;
-  color: var(--accent-sage);
-  line-height: 1;
+.gateway-text-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-.tracker-label {
-  font-size: 0.75rem;
-  color: var(--ink-tertiary);
-  font-weight: 600;
+.gateway-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-clay);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+}
+
+.gateway-heading {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--ink-primary);
+  line-height: 1.2;
+}
+
+.gateway-sub {
+  font-size: 0.85rem;
+  color: var(--ink-secondary);
+}
+
+.gateway-action-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.gateway-count-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  background: var(--accent-sage-light);
+  color: var(--accent-sage);
+  border-radius: 1rem;
+}
+
+.gateway-arrow {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--accent-clay);
+}
+
+/* Art Collection Selector Bar */
+.art-collection-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.btn-art-theme {
+  background: #FFF;
+  border: 1px solid var(--border-medium);
+  border-radius: 1.25rem;
+  padding: 0.35rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-art-theme:hover {
+  border-color: var(--accent-clay);
+  color: var(--ink-primary);
+  transform: translateY(-1px);
+}
+
+.btn-art-theme.active {
+  background: var(--accent-clay);
+  color: #FFF;
+  border-color: var(--accent-clay);
+  box-shadow: 0 4px 12px rgba(222, 107, 72, 0.25);
 }
 
 /* Master Drawing Board - Textured Watercolor Paper */
 .illustration-drawing-board {
   position: relative;
-  width: 100%;
-  height: 560px;
+  width: 580px;
+  height: 760px;
+  max-width: 100%;
+  margin: 1.25rem auto;
   background: #FAF6EF;
   background-image: 
     radial-gradient(#E8E1D2 0.85px, transparent 0.85px),
@@ -1823,7 +1906,7 @@ body {
   border: 12px solid #E4DCCF;
   border-radius: 1.5rem;
   box-shadow: 
-    0 16px 40px -10px rgba(45, 38, 20, 0.14),
+    0 20px 48px -10px rgba(45, 38, 20, 0.18),
     inset 0 2px 8px rgba(45, 38, 20, 0.06);
   overflow: hidden;
   user-select: none;
@@ -1846,7 +1929,7 @@ body {
     linear-gradient(180deg, #1C2B3F 0%, #111A27 100%);
   border-color: #27374D;
   box-shadow: 
-    0 16px 40px -10px rgba(10, 16, 26, 0.4),
+    0 20px 48px -10px rgba(10, 16, 26, 0.45),
     inset 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
@@ -1862,11 +1945,11 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.18;
+  opacity: 0.16;
   background-image: 
     linear-gradient(to right, rgba(45, 38, 30, 0.15) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(45, 38, 30, 0.15) 1px, transparent 1px);
-  background-size: 100px 100px;
+  background-size: 60px 60px;
 }
 
 /* Placed Continuous Fragments Layer */
@@ -1878,8 +1961,10 @@ body {
 
 .placed-fragment {
   position: absolute;
-  transition: opacity 0.35s ease, filter 0.35s ease;
-  filter: drop-shadow(0 2px 6px rgba(45, 38, 30, 0.06));
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 2px 8px rgba(45, 38, 30, 0.14));
+  transition: opacity 0.35s ease, filter 0.35s ease, transform 0.2s ease;
+  user-select: none;
 }
 
 .placed-fragment.just-snapped {
@@ -1887,18 +1972,73 @@ body {
 }
 
 @keyframes fragmentSnapBloom {
-  0% { transform: scale(1.05); filter: drop-shadow(0 0 18px rgba(184, 123, 46, 0.5)); }
+  0% { transform: scale(1.04); filter: drop-shadow(0 0 24px rgba(222, 107, 72, 0.6)); }
   50% { transform: scale(0.99); }
-  100% { transform: scale(1); filter: drop-shadow(0 2px 6px rgba(45, 38, 30, 0.06)); }
+  100% { transform: scale(1); filter: drop-shadow(0 2px 8px rgba(45, 38, 30, 0.14)); }
+}
+
+/* Organic Hand-Torn Deckle Edge Contours */
+.deckle-1 {
+  clip-path: polygon(
+    2% 2%, 18% 0.5%, 38% 2%, 58% 0.8%, 78% 2%, 98% 1.5%,
+    99% 18%, 98% 38%, 99.5% 58%, 98% 78%, 99% 98%,
+    78% 99.2%, 58% 98%, 38% 99.5%, 18% 98%, 1% 99%,
+    2% 78%, 0.8% 58%, 2% 38%, 1% 18%
+  );
+}
+
+.deckle-2 {
+  clip-path: polygon(
+    1.5% 3%, 22% 1%, 42% 2.5%, 68% 1%, 88% 2.8%, 98.5% 1%,
+    98% 22%, 99.5% 44%, 98% 68%, 99% 88%, 97.5% 99%,
+    78% 98%, 56% 99.2%, 34% 98%, 12% 99%, 1.5% 97%,
+    1% 75%, 2.5% 50%, 1% 25%
+  );
+}
+
+.deckle-3 {
+  clip-path: polygon(
+    2.5% 1.5%, 25% 2.5%, 50% 1%, 75% 2.5%, 97.5% 1.5%,
+    99% 20%, 97.5% 45%, 99% 70%, 98% 95%,
+    80% 98.5%, 55% 97%, 30% 98.5%, 5% 97%,
+    1.5% 80%, 2.5% 55%, 1% 30%
+  );
+}
+
+.deckle-4 {
+  clip-path: polygon(
+    1% 2%, 20% 0.8%, 45% 2%, 70% 0.5%, 90% 2%, 99% 1%,
+    98% 25%, 99.5% 55%, 98% 85%, 99% 98%,
+    80% 99%, 55% 98%, 30% 99.5%, 10% 98%, 1% 99%,
+    2% 70%, 0.5% 40%, 2% 15%
+  );
+}
+
+.deckle-5 {
+  clip-path: polygon(
+    2% 1.5%, 28% 2.8%, 58% 1%, 82% 2.5%, 98% 1%,
+    99% 25%, 97.8% 55%, 99% 82%, 98% 98.5%,
+    75% 97.5%, 48% 99%, 22% 98%, 2% 99%,
+    1% 72%, 2.2% 45%, 1% 18%
+  );
+}
+
+.deckle-6 {
+  clip-path: polygon(
+    1.8% 2%, 24% 1%, 52% 2.5%, 78% 1%, 98.2% 2%,
+    98.5% 28%, 97.5% 58%, 99% 86%, 98% 98%,
+    76% 99%, 48% 98%, 20% 99.2%, 1.8% 98%,
+    1% 70%, 2.4% 42%, 1% 15%
+  );
 }
 
 /* Magnetic Alignment Hint Aura */
 .magnetic-snap-hint {
   position: absolute;
   pointer-events: none;
-  border: 2px dashed rgba(184, 123, 46, 0.6);
-  background: rgba(184, 123, 46, 0.08);
-  border-radius: 1rem;
+  border: 2px dashed rgba(222, 107, 72, 0.7);
+  background: rgba(222, 107, 72, 0.1);
+  border-radius: 12px;
   opacity: 0;
   transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 50;
@@ -1910,8 +2050,8 @@ body {
 }
 
 @keyframes magneticPulse {
-  0% { transform: scale(0.99); box-shadow: 0 0 0 rgba(184, 123, 46, 0); }
-  100% { transform: scale(1.01); box-shadow: 0 0 20px rgba(184, 123, 46, 0.3); }
+  0% { transform: scale(0.99); box-shadow: 0 0 0 rgba(222, 107, 72, 0); }
+  100% { transform: scale(1.01); box-shadow: 0 0 24px rgba(222, 107, 72, 0.4); }
 }
 
 /* Active Dragging Layer */
@@ -1925,15 +2065,16 @@ body {
 .dragging-fragment-node {
   position: absolute;
   pointer-events: none;
-  filter: drop-shadow(0 14px 28px rgba(45, 38, 30, 0.25));
-  transform: scale(1.03) rotate(0.6deg);
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 16px 36px rgba(45, 38, 30, 0.35));
+  transform: scale(1.03) rotate(0.8deg);
   transition: transform 0.08s ease;
   z-index: 250;
 }
 
 .dragging-fragment-node.is-magnetic {
   transform: scale(1.01) rotate(0deg);
-  filter: drop-shadow(0 0 22px rgba(184, 123, 46, 0.45));
+  filter: drop-shadow(0 0 24px rgba(222, 107, 72, 0.55));
 }
 
 /* Snap Success Celebration Toast */

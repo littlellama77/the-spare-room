@@ -156,6 +156,22 @@
         </div>
       </section>
 
+      <!-- Direct Portal to Hand-Drawn Living World -->
+      <section class="world-direct-gateway-section" aria-label="Living World Gateway">
+        <button type="button" class="btn-desk-enter-world" id="btn-desk-enter-world">
+          <div class="gateway-icon-art">🏰</div>
+          <div class="gateway-text-block">
+            <span class="gateway-kicker">HAND-DRAWN VISUAL CONTINUITY PUZZLE</span>
+            <h4 class="gateway-heading">The Clockmaker's Cozy Workshop</h4>
+            <p class="gateway-sub">Notice the visual connections—copper steam pipes, stone staircases, and glowing lanterns connect the fragments into one rich drawing.</p>
+          </div>
+          <div class="gateway-action-cue">
+            <span class="gateway-count-pill" id="desk-world-count-pill">1 / 6 Assembled</span>
+            <span class="gateway-arrow">Enter World 🎨 →</span>
+          </div>
+        </button>
+      </section>
+
       <!-- 4. THE CALENDAR: PHYSICAL WALL DESK WITH ACCUMULATED SCRATCHES -->
       <section class="week-calendar-section" aria-label="Your week schedule">
         <div class="week-section-header">
@@ -308,12 +324,18 @@
           <!-- 1. The Hand-Drawn Living Illustration Assembly -->
           <div class="play-pane active" id="pane-island">
             <div class="illustration-world-workspace" id="illustration-world-workspace">
-              <!-- Top Canvas Header: Instructions & Assembly Progress -->
+              <!-- Top Canvas Header: Instructions & Art Theme Selector -->
               <div class="illustration-canvas-header">
                 <div class="canvas-meta-info">
-                  <span class="canvas-meta-badge">VISUAL CONTINUITY PUZZLE</span>
-                  <h3 class="canvas-world-title">The Valley of the Watermill</h3>
-                  <p class="canvas-world-desc">Notice the visual connections—rooflines, roads, rivers, and branches connect the fragments into one continuous hand-drawn illustration.</p>
+                  <div class="art-collection-selector" id="art-collection-selector">
+                    <button type="button" class="btn-art-theme active" data-art="workshop">🏰 Cozy Workshop</button>
+                    <button type="button" class="btn-art-theme" data-art="cats">🐱 Flowing Cats</button>
+                    <button type="button" class="btn-art-theme" data-art="tower">🗼 Vintage Tower</button>
+                    <button type="button" class="btn-art-theme" data-art="landscape">⛰️ Hatched Alps</button>
+                    <button type="button" class="btn-art-theme" data-art="celestial">🌌 Celestial City</button>
+                  </div>
+                  <h3 class="canvas-world-title" id="canvas-world-title">The Clockmaker's Cozy Workshop</h3>
+                  <p class="canvas-world-desc" id="canvas-world-desc">Notice the visual connections—copper steam pipes, stone staircases, and glowing lanterns connect the fragments into one rich drawing.</p>
                 </div>
                 <div class="canvas-assembly-tracker" id="canvas-assembly-tracker">
                   <span class="tracker-count" id="frag-tracker-count">1 / 6</span>
